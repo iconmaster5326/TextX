@@ -151,6 +151,14 @@ namespace curses {
 			wrefresh(raw);
 		}
 		
+		inline void scrollUp() {
+			wscrl(raw, 1);
+		}
+		
+		inline void scrollUp(int n) {
+			wscrl(raw, n);
+		}
+		
 		// box drawing
 		inline void drawBorder(string chars) {
 			wborder(raw, chars[0], chars[1], chars[2], chars[3], chars[4], chars[5], chars[6], chars[7]);
@@ -277,6 +285,7 @@ namespace curses {
 		keypad(stdscr, TRUE);
 		noecho();
 		clear();
+		scrollok(stdscr, TRUE);
 		
 		if(has_colors() == TRUE) start_color();
 		mousemask(ALL_MOUSE_EVENTS, NULL);
