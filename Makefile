@@ -1,5 +1,5 @@
-textx.exe: src/textx.cpp
-	$(CXX) -o textx src/textx.cpp -lncurses
+textx.exe: src/textx.cpp src/curses.hpp
+	$(CXX) -Isrc -o textx src/textx.cpp -lncurses
 
 all: textx.exe
 

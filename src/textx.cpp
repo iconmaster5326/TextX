@@ -5,17 +5,24 @@
  *      Author: iconmaster
  */
 
-#include <curses.h>
+#include "curses.hpp"
+
+#include <cctype>
+
+using namespace std;
+using namespace curses;
+// using namespace textx;
 
 int main(int argc, char** argv) {
-	initscr();
-	raw();
-	keypad(stdscr, TRUE);
-	noecho();
+	Window win = curses::startCurses();
 	
-	wprintw(stdscr, "Hello, World!");
-	getch();
+	win.println("Key tester. Press F1 to exit.");
+	while (true) {
+		KeyCode key = win.getKey();
+		if (key.value == KEY_F(1)) break;
+		win.printf("NAME: %s CODE: %d CHAR: %c\n", key.name().c_str(), (int)key.value, (char)key.value);
+	}
 	
-	endwin();
+	stopCurses();
 	return 0;
 }
