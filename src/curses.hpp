@@ -143,10 +143,6 @@ namespace curses {
 			wprintw(raw, s.c_str(), t...);
 		}
 		
-		inline void setCursor(int x, int y) {
-			wmove(raw, x, y);
-		}
-		
 		inline void refresh() {
 			wrefresh(raw);
 		}
@@ -159,7 +155,26 @@ namespace curses {
 			wscrl(raw, n);
 		}
 		
+		inline void clear() {
+			wclear(raw);
+		}
+		
+		// cursor control
+		inline void setCursor(int x, int y) {
+			wmove(raw, y, x);
+		}
+		
+		inline void moveCursor(int dx, int dy) {
+			int x, y;
+			getyx(raw, y, x);
+			wmove(raw, y+dy, x+dx);
+		}
+		
 		// box drawing
+		inline void drawBorder() {
+			wborder(raw, 0, 0, 0, 0, 0, 0, 0, 0);
+		}
+		
 		inline void drawBorder(string chars) {
 			wborder(raw, chars[0], chars[1], chars[2], chars[3], chars[4], chars[5], chars[6], chars[7]);
 		}
@@ -205,11 +220,12 @@ namespace curses {
 			wattroff(raw, attrs);
 		}
 		
-		inline attr_t getAttributes() {
-			attr_t attrs;
-			wattr_get(raw, &attrs, NULL, NULL);
-			return attrs;
-		}
+		// TODO: this doesn't compile in some versions of ncurses
+//		inline attr_t getAttributes() {
+//			attr_t attrs;
+//			wattr_get(raw, &attrs, NULL, NULL);
+//			return attrs;
+//		}
 		
 		// color
 		inline void setColor(short pair) {
@@ -284,12 +300,12 @@ namespace curses {
 		raw();
 		keypad(stdscr, TRUE);
 		noecho();
-		clear();
 		scrollok(stdscr, TRUE);
 		
 		if(has_colors() == TRUE) start_color();
 		mousemask(ALL_MOUSE_EVENTS, NULL);
 		
+		clear();
 		return Window(stdscr);
 	}
 	
