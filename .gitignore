@@ -16,6 +16,11 @@
 *.exe
 /textx
 
+# Core dumps
+*.stacktrace
+core.*
+vgcore.*
+
 # Eclipse related files
 /.project
 /.cproject
