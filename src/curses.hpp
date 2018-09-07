@@ -115,7 +115,7 @@ namespace curses {
 		}
 		
 		inline ~Window() {
-			// delwin(raw);
+			// TODO delwin(raw);
 		}
 		
 		// input

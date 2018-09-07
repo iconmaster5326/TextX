@@ -34,7 +34,7 @@ namespace textx {
 		// TODO
 	}
 	string TextEditorApp::getTitle() {
-		return "";
+		return "Test App";
 	}
 	void TextEditorApp::close() {
 		

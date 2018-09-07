@@ -68,10 +68,16 @@ namespace textx {
 		app->setPane(nullptr);
 	}
 	void AppPane::refreshTitle() {
-		// TODO
+		if (app != nullptr) {
+			titleBar.setCursor(0, 0);
+			titleBar.print(app->getTitle());
+			titleBar.refresh();
+		}
 	}
 	void AppPane::refresh() {
-		// TODO draw border
+		window.drawBorder();
+		window.refresh();
+		
 		refreshTitle();
 		app->refresh();
 	}
