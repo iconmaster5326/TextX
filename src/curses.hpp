@@ -98,7 +98,9 @@ namespace curses {
 	};
 	
 	class Window { public:
-		WINDOW* raw;
+		WINDOW* raw = nullptr;
+		
+		inline Window() {}
 		
 		inline Window(WINDOW* raw) {
 			this->raw = raw;
