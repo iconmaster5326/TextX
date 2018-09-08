@@ -25,7 +25,8 @@ namespace textx {
 		curses::Window win = getPane()->getContent();
 		
 		win.setCursor(0, 0);
-		win.println("Hello, World!");
+		char* term = getenv("TERM");
+		if (term != nullptr) win.println(string(term)); else win.println("($TERM not set)");
 		win.refresh();
 		
 		// TODO
