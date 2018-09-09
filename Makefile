@@ -1,3 +1,4 @@
+# vars
 ifeq ($(OS),Windows_NT)
 EXE_SUFFIX := .exe
 else
@@ -6,15 +7,28 @@ endif
 
 EXE_NAME := textx$(EXE_SUFFIX)
 
-$(EXE_NAME): src/textx.cpp src/curses.hpp src/pane.cpp src/pane.hpp src/app.cpp src/app.hpp
-	$(CXX) -static -std=c++03 -Isrc -o textx src/textx.cpp src/pane.cpp src/app.cpp -lncurses $(LINUX_LINKFLAGS)
+CXX_FILES := $(wildcard src/*.cpp)
+HXX_FILES := $(wildcard src/*.hpp)
+O_FILES := $(patsubst src/%.cpp,build/%.o,$(CXX_FILES))
 
+# exe must be at top, so it's default
+$(EXE_NAME): $(O_FILES)
+	$(CXX) -static -o textx $(O_FILES) -lncurses $(LINUX_LINKFLAGS)
+
+# other rules
+$(O_FILES): build/%.o: src/%.cpp build $(HXX_FILES)
+	$(CXX) -std=c++03 -Isrc -c -o $@ $<
+
+build:
+	mkdir build
+
+# phony rules
 all: $(EXE_NAME)
 
 clean:
-	$(RM) textx textx.exe
+	rm -rf build textx textx.exe
 
 run: $(EXE_NAME)
-	./$(EXE_NAME)
+	`readlink -f $(EXE_NAME)`
 
 .PHONY: clean run all

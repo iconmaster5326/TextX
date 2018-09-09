@@ -2,6 +2,7 @@
 *.d
 
 # Compiled Object files
+/build/
 *.o
 
 # Compiled Dynamic libraries
