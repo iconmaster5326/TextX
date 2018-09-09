@@ -24,27 +24,28 @@ namespace textx {
 		inline App(Pane* pane) {
 			this->pane = pane;
 		}
-		virtual ~App() = default;
+		virtual ~App();
 		
 		inline Pane* getPane() {
 			return pane;
 		}
 		void setPane(Pane* pane);
 		
-		virtual void refresh() = 0;
-		virtual void onKey(curses::KeyCode key) = 0;
-		virtual string getTitle() = 0;
-		virtual void close() = 0;
+		// abstract methods
+		virtual void refresh();
+		virtual void onKey(curses::KeyCode key);
+		virtual string getTitle();
+		virtual void close();
 	};
 	
 	class TextEditorApp : public App {
 	public:
 		inline TextEditorApp(Pane* pane) : App(pane) {};
 		
-		void refresh() override;
-		void onKey(curses::KeyCode key) override;
-		string getTitle() override;
-		void close() override;
+		void refresh();
+		void onKey(curses::KeyCode key);
+		string getTitle();
+		void close();
 	};
 }
 

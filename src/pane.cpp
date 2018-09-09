@@ -8,10 +8,16 @@
 #include "pane.hpp"
 #include "app.hpp"
 
+#include <exception>
+
 namespace textx {
 	using namespace std;
 	
 	// Pane
+	Pane::~Pane() {
+		// TODO
+	}
+	
 	void Pane::setParent(Pane* pane) {
 		if (pane == parent) return;
 		
@@ -21,10 +27,24 @@ namespace textx {
 	}
 	
 	void Pane::refreshContent() {
-		for (App* app : getApps()) {
+		vector<App*> apps = getApps();
+		for (vector<App*>::const_iterator it = apps.begin(); it != apps.end(); it++) {
+			App* app = *it;
 			app->refresh();
 		}
 	}
+	
+	curses::Window Pane::getTitleBar() {throw exception();}
+	vector<Pane*> Pane::getChildren() {throw exception();}
+	void Pane::addChild(Pane* pane) {throw exception();}
+	void Pane::removeChild(Pane* pane) {throw exception();}
+	vector<App*> Pane::getApps() {throw exception();}
+	void Pane::addApp(App* app) {throw exception();}
+	void Pane::removeApp(App* app) {throw exception();}
+	void Pane::refreshTitle() {throw exception();}
+	void Pane::refresh() {throw exception();}
+	curses::Window Pane::getContent() {throw exception();}
+	curses::Window Pane::getStatusBar() {throw exception();}
 	
 	// AppPane
 	void AppPane::init() {
@@ -55,7 +75,9 @@ namespace textx {
 		throw "This pane cannot have children";
 	}
 	vector<App*> AppPane::getApps() {
-		return vector<App*>({app});
+		vector<App*> apps;
+		apps.push_back(app);
+		return apps;
 	}
 	void AppPane::addApp(App* app) {
 		if (app == this->app) return;
@@ -64,11 +86,11 @@ namespace textx {
 	}
 	void AppPane::removeApp(App* app) {
 		if (app != this->app) return;
-		this->app = nullptr;
-		app->setPane(nullptr);
+		this->app = NULL;
+		app->setPane(NULL);
 	}
 	void AppPane::refreshTitle() {
-		if (app != nullptr) {
+		if (app != NULL) {
 			titleBar.setCursor(0, 0);
 			titleBar.print(app->getTitle());
 			titleBar.refresh();

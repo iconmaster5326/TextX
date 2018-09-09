@@ -11,8 +11,8 @@
 
 #include <curses.h>
 
+#include <cstdarg>
 #include <string>
-#include <utility>
 
 namespace curses {
 	using namespace std;
@@ -98,7 +98,7 @@ namespace curses {
 	};
 	
 	class Window { public:
-		WINDOW* raw = nullptr;
+		WINDOW* raw = NULL;
 		
 		inline Window() {}
 		
@@ -141,8 +141,11 @@ namespace curses {
 			waddch(raw, '\n');
 		}
 		
-		template<class ... T> inline void printf(string s, T... t) {
-			wprintw(raw, s.c_str(), t...);
+		inline void printf(string s, ...) {
+			va_list args;
+			va_start(args, s);
+			vwprintw(raw, s.c_str(), args);
+			va_end(args);
 		}
 		
 		inline void refresh() {

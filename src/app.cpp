@@ -8,10 +8,17 @@
 #include "app.hpp"
 #include "pane.hpp"
 
+#include <cstdlib>
+#include <exception>
+
 namespace textx {
 	using namespace std;
 	
 	// App
+	App::~App() {
+		// TODO
+	}
+	
 	void App::setPane(Pane* pane) {
 		if (this->pane == pane) return;
 		
@@ -20,13 +27,18 @@ namespace textx {
 		pane->addApp(this);
 	}
 	
+	void App::refresh() {throw exception();}
+	string App::getTitle() {throw exception();}
+	void App::close() {throw exception();}
+	void App::onKey(curses::KeyCode key) {throw exception();}
+	
 	// TextEditorApp
 	void TextEditorApp::refresh() {
 		curses::Window win = getPane()->getContent();
 		
 		win.setCursor(0, 0);
 		char* term = getenv("TERM");
-		if (term != nullptr) win.println(string(term)); else win.println("($TERM not set)");
+		if (term != NULL) win.println(string(term)); else win.println("($TERM not set)");
 		win.refresh();
 		
 		// TODO
