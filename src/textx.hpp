@@ -22,7 +22,7 @@ namespace textx {
 	// app control
 	App* getFocus();
 	void setFocus(App* app);
-	vector<App*> getAllApps();
+	vector<App*>* getAllApps();
 	
 	// event handlers
 	void onKey(curses::KeyCode key);

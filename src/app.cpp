@@ -7,6 +7,7 @@
 
 #include "app.hpp"
 #include "pane.hpp"
+#include "textx.hpp"
 
 #include <cstdlib>
 #include <exception>
@@ -15,6 +16,11 @@ namespace textx {
 	using namespace std;
 	
 	// App
+	App::App(Pane* pane) {
+		this->pane = pane;
+		getAllApps()->push_back(this);
+	}
+	
 	App::~App() {
 		// TODO
 	}

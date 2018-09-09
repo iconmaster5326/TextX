@@ -21,9 +21,7 @@ namespace textx {
 	private:
 		Pane* pane;
 	public:
-		inline App(Pane* pane) {
-			this->pane = pane;
-		}
+		App(Pane* pane);
 		virtual ~App();
 		
 		inline Pane* getPane() {

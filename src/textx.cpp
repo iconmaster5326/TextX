@@ -23,8 +23,8 @@ namespace textx {
 		focus = app;
 	}
 	
-	vector<App*> getAllApps() {
-		return apps;
+	vector<App*>* getAllApps() {
+		return &apps;
 	}
 	
 	void onKey(curses::KeyCode key) {
