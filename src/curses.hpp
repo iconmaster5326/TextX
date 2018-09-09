@@ -308,7 +308,10 @@ namespace curses {
 		noecho();
 		scrollok(stdscr, TRUE);
 		
-		if(has_colors() == TRUE) start_color();
+		if(has_colors() == TRUE) {
+			start_color();
+			use_default_colors();
+		}
 		mousemask(ALL_MOUSE_EVENTS, NULL);
 		
 		clear();

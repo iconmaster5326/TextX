@@ -72,7 +72,7 @@ namespace textx {
 	ColorPair getColorPair(Color fg, Color bg) {
 		unsigned code = pairToInt(fg.index, bg.index);
 		if (pairsInUse.find(code) == pairsInUse.end()) {
-			short index = 2;
+			short index = 1;
 			while (true) {
 				if (index >= COLOR_PAIRS) throw exception();
 				if (pairIndicesInUse.find(index) == pairIndicesInUse.end()) break;
@@ -94,7 +94,7 @@ namespace textx {
 	Color getColor(unsigned char r, unsigned char g, unsigned char b) {
 		unsigned code = colorToInt(r, g, b);
 		if (colorsInUse.find(code) == colorsInUse.end()) {
-			short index = 1;
+			short index = 8;
 			while (true) {
 				if (index >= COLORS) throw exception();
 				if (colorIndicesInUse.find(index) == colorIndicesInUse.end()) break;
@@ -110,6 +110,22 @@ namespace textx {
 		} else {
 			colorsInUse[code].usages++;
 			return Color(colorsInUse[code].value);
+		}
+	}
+	
+	namespace color {
+		Color system = Color(-1);
+		Color black = Color(COLOR_BLACK);
+		Color red = Color(COLOR_RED);
+		Color green = Color(COLOR_GREEN);
+		Color yellow = Color(COLOR_YELLOW);
+		Color blue = Color(COLOR_BLUE);
+		Color magenta = Color(COLOR_MAGENTA);
+		Color cyan = Color(COLOR_CYAN);
+		Color white = Color(COLOR_WHITE);
+		
+		namespace pair {
+			ColorPair system = ColorPair(0);
 		}
 	}
 }

@@ -42,7 +42,7 @@ namespace textx {
 	// TextEditorApp
 	void TextEditorApp::refresh() {
 		curses::Window win = getPane()->getContent();
-		getColorPair(getColor(255, 255, 255), getColor(0, 0, 0)).use(win);
+		color::pair::system.use(win);
 		
 		win.setCursor(0, 0);
 		win.print("Your terminal is: ");

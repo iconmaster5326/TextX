@@ -91,7 +91,7 @@ namespace textx {
 	}
 	void AppPane::refresh() {
 		// draw border
-		ColorPair color = getColorPair(getColor(255, 255, 255), getColor(0, 0, 128));
+		ColorPair color = getColorPair(color::white, color::blue);
 		color.use(window);
 		window.drawBorder();
 		
