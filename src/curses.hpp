@@ -111,7 +111,8 @@ namespace curses {
 		}
 		
 		inline Window(Window win, int x, int y, int w, int h) {
-			this->raw = derwin(win.raw, h, w, y, x);
+			int px, py; win.getPosition(px, py);
+			this->raw = newwin(h, w, py+y, px+x);
 		}
 		
 		inline ~Window() {
@@ -234,7 +235,7 @@ namespace curses {
 		
 		// color
 		inline void setColor(short pair) {
-			wattron(raw, COLOR_PAIR(pair));
+			wcolor_set(raw, pair, NULL);
 		}
 		
 		inline void setAttributesAt(attr_t attrs, short pair, int n) {

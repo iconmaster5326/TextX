@@ -13,11 +13,11 @@ O_FILES := $(patsubst src/%.cpp,build/%.o,$(CXX_FILES))
 
 # exe must be at top, so it's default
 $(EXE_NAME): $(O_FILES)
-	$(CXX) -static -o textx $(O_FILES) -lncurses $(LINUX_LINKFLAGS)
+	$(CXX) -g -static -o textx $(O_FILES) -lncurses $(LINUX_LINKFLAGS)
 
 # other rules
 $(O_FILES): build/%.o: src/%.cpp build $(HXX_FILES)
-	$(CXX) -std=c++03 -Isrc -c -o $@ $<
+	$(CXX) -g -std=c++03 -Isrc -c -o $@ $<
 
 build:
 	mkdir build

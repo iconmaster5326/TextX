@@ -7,6 +7,7 @@
 
 #include "pane.hpp"
 #include "app.hpp"
+#include "colors.hpp"
 
 #include <exception>
 
@@ -90,13 +91,15 @@ namespace textx {
 	}
 	void AppPane::refresh() {
 		// draw border
+		ColorPair color = getColorPair(getColor(255, 255, 255), getColor(0, 0, 128));
+		color.use(window);
 		window.drawBorder();
 		
 		//draw title
 		if (app != NULL) {
+			color.use(titleBar);
 			titleBar.setCursor(0, 0);
 			titleBar.print(app->getTitle());
-			titleBar.refresh();
 		}
 		
 		// ensure curses does its thing

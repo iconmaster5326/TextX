@@ -8,6 +8,7 @@
 #include "app.hpp"
 #include "pane.hpp"
 #include "textx.hpp"
+#include "colors.hpp"
 
 #include <cstdlib>
 #include <exception>
@@ -41,6 +42,7 @@ namespace textx {
 	// TextEditorApp
 	void TextEditorApp::refresh() {
 		curses::Window win = getPane()->getContent();
+		getColorPair(getColor(255, 255, 255), getColor(0, 0, 0)).use(win);
 		
 		win.setCursor(0, 0);
 		win.print("Your terminal is: ");
