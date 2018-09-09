@@ -1,28 +1,33 @@
 /*
  * textx.cpp
  *
- *  Created on: Sep 6, 2018
+ *  Created on: Sep 9, 2018
  *      Author: iconmaster
  */
 
-#include "curses.hpp"
-#include "pane.hpp"
+
+#include "textx.hpp"
 #include "app.hpp"
 
-#include <cctype>
-
-using namespace std;
-using namespace curses;
-using namespace textx;
-
-int main(int argc, char** argv) {
-	Window screen = startCurses();
+namespace textx {
+	using namespace std;
 	
-	AppPane pane = AppPane(screen);
-	pane.addApp(new TextEditorApp((Pane*)&pane));
-	pane.refresh();
+	static App* focus;
+	static vector<App*> apps;
 	
-	screen.getKey();
-	stopCurses();
-	return 0;
+	App* getFocus() {
+		return focus;
+	}
+	
+	void setFocus(App* app) {
+		focus = app;
+	}
+	
+	vector<App*> getAllApps() {
+		return apps;
+	}
+	
+	void onKey(curses::KeyCode key) {
+		focus->onKey(key);
+	}
 }

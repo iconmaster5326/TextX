@@ -99,11 +99,11 @@ namespace textx {
 			titleBar.refresh();
 		}
 		
+		// ensure curses does its thing
+		window.refresh();
+		
 		// draw app
 		app->refresh();
-		
-		// ensure curses does it's thing
-		window.refresh();
 	}
 	curses::Window AppPane::getTitleBar() {
 		return titleBar;

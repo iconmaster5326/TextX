@@ -37,13 +37,24 @@ namespace textx {
 		curses::Window win = getPane()->getContent();
 		
 		win.setCursor(0, 0);
+		win.print("Your terminal is: ");
 		char* term = getenv("TERM");
 		if (term != NULL) win.println(string(term)); else win.println("($TERM not set)");
+		win.println("Press F1 to exit.");
 		win.refresh();
 		
 		// TODO
 	}
 	void TextEditorApp::onKey(curses::KeyCode key) {
+		curses::Window win = getPane()->getContent();
+		switch (key.value) {
+		case KEY_LEFT: win.moveCursor(-1, 0); break;
+		case KEY_RIGHT: win.moveCursor(1, 0); break;
+		case KEY_UP: win.moveCursor(0, -1); break;
+		case KEY_DOWN: win.moveCursor(0, 1); break;
+		default: win.print(key.value);
+		}
+		win.refresh();
 		// TODO
 	}
 	string TextEditorApp::getTitle() {
