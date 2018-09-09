@@ -45,6 +45,7 @@ namespace textx {
 	void Pane::refresh() {throw exception();}
 	curses::Window Pane::getContent() {throw exception();}
 	curses::Window Pane::getStatusBar() {throw exception();}
+	void Pane::clearStatusBar() {throw exception();}
 	
 	// AppPane
 	void AppPane::init() {
@@ -98,12 +99,17 @@ namespace textx {
 		//draw title
 		if (app != NULL) {
 			color.use(titleBar);
+			window.copyInto(titleBar, false);
 			titleBar.setCursor(0, 0);
 			titleBar.print(app->getTitle());
 		}
 		
+		// setup drawing for status bar
+		color.use(statusBar);
+		
 		// ensure curses does its thing
 		window.refresh();
+		titleBar.refresh();
 		
 		// draw app
 		app->refresh();
@@ -116,5 +122,8 @@ namespace textx {
 	}
 	curses::Window AppPane::getStatusBar() {
 		return statusBar;
+	}
+	void AppPane::clearStatusBar() {
+		window.copyInto(statusBar, false);
 	}
 }

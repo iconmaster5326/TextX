@@ -119,6 +119,17 @@ namespace curses {
 			// TODO delwin(raw);
 		}
 		
+		inline void copyInto(Window dst, bool isoverlay) {
+			if (isoverlay)
+				overlay(raw, dst.raw);
+			else
+				overwrite(raw, dst.raw);
+		}
+		
+		inline void copyInto(Window dst, int sx, int sy, int sw, int sh, int dx, int dy, bool isoverlay) {
+			copywin(raw, dst.raw, sy, sx, dy, dx, sy+sh, sx+sw, isoverlay);
+		}
+		
 		// input
 		inline KeyCode getKey() {
 			return KeyCode(wgetch(raw));
