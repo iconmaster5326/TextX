@@ -108,11 +108,15 @@ namespace curses {
 		
 		inline Window(int x, int y, int w, int h) {
 			this->raw = newwin(h, w, y, x);
+			keypad(raw, TRUE);
+			scrollok(raw, TRUE);
 		}
 		
 		inline Window(Window win, int x, int y, int w, int h) {
 			int px, py; win.getPosition(px, py);
 			this->raw = newwin(h, w, py+y, px+x);
+			keypad(raw, TRUE);
+			scrollok(raw, TRUE);
 		}
 		
 		inline ~Window() {
@@ -308,6 +312,10 @@ namespace curses {
 			int x, y;
 			getPosition(x, y);
 			return y;
+		}
+		
+		inline void setScrollable(bool scrollable) {
+			scrollok(raw, scrollable);
 		}
 	};
 	
