@@ -21,7 +21,7 @@ namespace textx {
 	class TextEditorApp : public App {
 	public:
 		TEBuffer buffer;
-		unsigned long offset = 0;
+		unsigned long offset;
 		string filename;
 		bool hasFilename;
 		bool unsaved;
