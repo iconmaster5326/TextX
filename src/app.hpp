@@ -35,16 +35,6 @@ namespace textx {
 		virtual string getTitle();
 		virtual void close();
 	};
-	
-	class TextEditorApp : public App {
-	public:
-		inline TextEditorApp(Pane* pane) : App(pane) {};
-		
-		void refresh();
-		void onKey(curses::KeyCode key);
-		string getTitle();
-		void close();
-	};
 }
 
 #endif /* SRC_APP_HPP_ */

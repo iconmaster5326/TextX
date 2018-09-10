@@ -11,6 +11,8 @@
 #include "app.hpp"
 #include "colors.hpp"
 
+#include "text_editor.hpp"
+
 using namespace std;
 using namespace curses;
 using namespace textx;
