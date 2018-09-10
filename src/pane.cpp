@@ -46,24 +46,18 @@ namespace textx {
 	curses::Window Pane::getContent() {throw exception();}
 	curses::Window Pane::getStatusBar() {throw exception();}
 	void Pane::clearStatusBar() {throw exception();}
+	void Pane::initWindow(curses::Window window) {throw exception();}
 	
 	// AppPane
-	void AppPane::init() {
-		int w, h; window.getSize(w, h);
-		content = curses::Window(window, 1, 1, w-2, h-2);
-		statusBar = curses::Window(window, 2, h-1, w-4, 1);
-		titleBar = curses::Window(window, 2, 0, w-4, 1);
-	}
-	
 	AppPane::AppPane(Pane* parent) {
 		setParent(parent);
 		window = parent->getContent();
-		init();
+		initWindow(window);
 	}
 	
 	AppPane::AppPane(curses::Window window) {
 		this->window = window;
-		init();
+		initWindow(window);
 	}
 	
 	vector<Pane*> AppPane::getChildren() {
@@ -84,6 +78,7 @@ namespace textx {
 		if (app == this->app) return;
 		this->app = app;
 		app->setPane(this);
+		refresh();
 	}
 	void AppPane::removeApp(App* app) {
 		if (app != this->app) return;
@@ -112,7 +107,7 @@ namespace textx {
 		titleBar.refresh();
 		
 		// draw app
-		app->refresh();
+		if (app != NULL) app->refresh();
 	}
 	curses::Window AppPane::getTitleBar() {
 		return titleBar;
@@ -125,5 +120,15 @@ namespace textx {
 	}
 	void AppPane::clearStatusBar() {
 		window.copyInto(statusBar, false);
+	}
+	void AppPane::initWindow(curses::Window window) {
+		this->window = window;
+		
+		int w, h; window.getSize(w, h);
+		content = curses::Window(window, 1, 1, w-2, h-2);
+		statusBar = curses::Window(window, 2, h-1, w-4, 1); statusBar.setScrollable(false);
+		titleBar = curses::Window(window, 2, 0, w-4, 1); titleBar.setScrollable(false);
+		
+		refresh();
 	}
 }

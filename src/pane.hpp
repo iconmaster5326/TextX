@@ -43,6 +43,7 @@ namespace textx {
 		virtual curses::Window getContent();
 		virtual curses::Window getStatusBar();
 		virtual void clearStatusBar();
+		virtual void initWindow(curses::Window window);
 	};
 	
 	class AppPane : public Pane {
@@ -70,6 +71,7 @@ namespace textx {
 		curses::Window getContent();
 		curses::Window getStatusBar();
 		void clearStatusBar();
+		void initWindow(curses::Window window);
 	};
 }
 
