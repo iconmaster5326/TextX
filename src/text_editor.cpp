@@ -42,11 +42,32 @@ namespace textx {
 		}
 	};
 	
+	static unsigned charWidth(char c, unsigned col) {
+		switch (c) {
+		case '\t': {
+			int i = col % 4;
+			if (i == 0) return 4; else return i;
+		}
+		case '\r': return 0;
+		default: return 1;
+		}
+	}
+	
 	static void drawChar(curses::Window win, char c) {
-		if (isprint(c) || isspace(c)) {
-			win.print(c);
-		} else {
-			win.print('?');
+		switch (c) {
+		case '\t': {
+			int tabSpaces = charWidth('\t', win.cursorX());
+			for (int i = 0; i < tabSpaces; i++) win.print(' ');
+			break;
+		}
+		case '\r': return;
+		default: {
+			if (isprint(c) || isspace(c)) {
+				win.print(c);
+			} else {
+				win.print('?');
+			}
+		}
 		}
 	}
 	
