@@ -22,7 +22,7 @@ namespace textx {
 		hasFilename = false;
 		unsaved = true;
 		
-		string s = "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25";
+		string s = "Hello, World! Press F1 to exit.\n";
 		buffer.insert(buffer.begin(), s.begin(), s.end());
 	};
 	
@@ -189,6 +189,17 @@ namespace textx {
 			} else {
 				refreshCursorOnly = true;
 			}
+			break;
+		}
+		case KEY_DC: {
+			if (cursorOffset >= buffer.size()) break;
+			buffer.erase(buffer.begin()+cursorOffset);
+			break;
+		}
+		case KEY_BACKSPACE: {
+			if (cursorOffset == 0) break;
+			buffer.erase(buffer.begin()+cursorOffset-1);
+			cursorOffset--;
 			break;
 		}
 		default: {
