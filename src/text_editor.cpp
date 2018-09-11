@@ -194,6 +194,15 @@ namespace textx {
 		default: {
 			buffer.insert(buffer.begin()+cursorOffset, key.value);
 			cursorOffset++;
+			
+			if (key.value == '\n') {
+				unsigned baseLine, dummy; offsetToLine(offset, baseLine, dummy);
+				unsigned line; offsetToLine(cursorOffset, line, dummy);
+				
+				if (line-baseLine >= win.height()-1) {
+					offset = lineToOffset(baseLine+1, 0);
+				}
+			}
 		}
 		}
 		
