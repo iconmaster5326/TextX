@@ -13,6 +13,9 @@
 
 #include <cstdlib>
 #include <cctype>
+#include <iterator>
+#include <iostream>
+#include <fstream>
 
 namespace textx {
 	using namespace std;
@@ -21,9 +24,6 @@ namespace textx {
 		offset = 0; cursorOffset = 0;
 		hasFilename = false;
 		unsaved = true;
-		
-		string s = "Hello, World! Press F1 to exit.\n";
-		buffer.insert(buffer.begin(), s.begin(), s.end());
 	};
 	
 	TextEditorApp::TextEditorApp(Pane* pane, string filename) : App(pane) {
@@ -31,20 +31,22 @@ namespace textx {
 		this->filename = filename;
 		hasFilename = true;
 		unsaved = false;
-		// TODO load file into editor
+		
+		// load file into buffer
+		ifstream file(filename.c_str());
+		if (file.good()) {
+			noskipws(file);
+			copy(istream_iterator<char>(file), istream_iterator<char>(), back_inserter(buffer));
+		} else {
+			unsaved = true;
+		}
 	};
 	
 	static void drawChar(curses::Window win, char c) {
-		switch (c) {
-		case '\n':
+		if (isprint(c) || isspace(c)) {
 			win.print(c);
-			break;
-		default:
-			if (isprint(c)) {
-				win.print(c);
-			} else {
-				win.print('?');
-			}
+		} else {
+			win.print('?');
 		}
 	}
 	
