@@ -100,7 +100,7 @@ namespace textx {
 	
 	void TextEditorApp::offsetToLine(unsigned offset, unsigned& line, unsigned& col) {
 		col = 0; line = 0;
-		if (offset == 0) return;
+		if (offset <= 0) return;
 		
 		unsigned currentOffset = 0;
 		for (TEBuffer::const_iterator it = buffer.begin(); it != buffer.end(); it++) {
@@ -119,20 +119,24 @@ namespace textx {
 	}
 	
 	int TextEditorApp::lineToOffset(unsigned line, unsigned col) {
-		if (line == 0) return col;
+		unsigned offset = 0, curLine = 0, curCol = 0;
 		
-		unsigned currentLine = 0;
-		unsigned offset = 0;
 		for (TEBuffer::const_iterator it = buffer.begin(); it != buffer.end(); it++) {
+			if (line == curLine && col == curCol) return offset;
+			
 			if (*it == '\n') {
-				currentLine++;
-				if (currentLine == line) return offset+col;
+				if (line == curLine) return offset;
+				curLine++;
+				curCol = 0;
+			} else {
+				curCol++;
 			}
+			
 			offset++;
 		}
 		
-		// if we fall through, return the last line possible
-		return currentLine;
+		// if we fall through, return the last offset possible
+		return offset;
 	}
 	
 	void TextEditorApp::refresh() {
@@ -149,21 +153,33 @@ namespace textx {
 		curses::Window win = pane->getContent();
 		bool refreshCursorOnly = false;
 		switch (key.value) {
-		case KEY_LEFT:
+		case KEY_LEFT: {
 			refreshCursorOnly = true;
 			if (cursorOffset > 0) cursorOffset--;
 			break;
-		case KEY_RIGHT:
+		}
+		case KEY_RIGHT: {
 			refreshCursorOnly = true;
 			if (cursorOffset < buffer.size()) cursorOffset++;
 			break;
-		case KEY_UP:
-		case KEY_DOWN:
-			// TODO
+		}
+		case KEY_UP: {
+			refreshCursorOnly = true;
+			unsigned line, col; offsetToLine(cursorOffset, line, col);
+			if (line == 0) break;
+			cursorOffset = lineToOffset(line-1, col);
 			break;
-		default:
+		}
+		case KEY_DOWN: {
+			refreshCursorOnly = true;
+			unsigned line, col; offsetToLine(cursorOffset, line, col);
+			cursorOffset = lineToOffset(line+1, col);
+			break;
+		}
+		default: {
 			buffer.insert(buffer.begin()+cursorOffset, key.value);
 			cursorOffset++;
+		}
 		}
 		
 		drawStatusBar(pane, win);
