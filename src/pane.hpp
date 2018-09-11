@@ -40,6 +40,7 @@ namespace textx {
 		virtual vector<App*> getApps();
 		virtual void addApp(App* app);
 		virtual void removeApp(App* app);
+		virtual void refreshTitleBar();
 		virtual void refresh();
 		virtual curses::Window getContent();
 		virtual curses::Window getStatusBar();
@@ -70,6 +71,7 @@ namespace textx {
 		vector<App*> getApps();
 		void addApp(App* app);
 		void removeApp(App* app);
+		void refreshTitleBar();
 		void refresh();
 		curses::Window getContent();
 		curses::Window getStatusBar();

@@ -165,6 +165,25 @@ namespace textx {
 		return offset;
 	}
 	
+	void TextEditorApp::saveBuffer() {
+		if (hasFilename) {
+			if (unsaved) {
+				ofstream file(filename.c_str());
+				copy(buffer.begin(), buffer.end(), ostream_iterator<char>(file));
+				
+				unsaved = false;
+				getPane()->refreshTitleBar();
+			}
+		} else {
+			// TODO save dialog
+		}
+	}
+	
+	void TextEditorApp::markAsUnsaved() {
+		unsaved = true;
+		getPane()->refreshTitleBar();
+	}
+	
 	void TextEditorApp::refresh() {
 		curses::Window win = getPane()->getContent();
 		color::pair::system.use(win);
@@ -179,6 +198,10 @@ namespace textx {
 		curses::Window win = pane->getContent();
 		bool refreshCursorOnly = false;
 		switch (key.value) {
+		case 19: // Control S: save
+			saveBuffer();
+			refreshCursorOnly = true;
+			break;
 		case KEY_LEFT: {
 			refreshCursorOnly = true;
 			if (cursorOffset > 0) {
@@ -223,6 +246,7 @@ namespace textx {
 		case KEY_DC: {
 			if (cursorOffset >= buffer.size()) break;
 			buffer.erase(buffer.begin()+cursorOffset);
+			markAsUnsaved();
 			break;
 		}
 		case 127:
@@ -230,6 +254,7 @@ namespace textx {
 			if (cursorOffset == 0) break;
 			buffer.erase(buffer.begin()+cursorOffset-1);
 			cursorOffset--;
+			markAsUnsaved();
 			break;
 		}
 		default: {
@@ -244,6 +269,8 @@ namespace textx {
 					offset = lineToOffset(baseLine+1, 0);
 				}
 			}
+			
+			markAsUnsaved();
 		}
 		}
 		

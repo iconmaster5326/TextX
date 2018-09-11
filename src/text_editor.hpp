@@ -30,15 +30,19 @@ namespace textx {
 		TextEditorApp(Pane* pane);
 		TextEditorApp(Pane* pane, string filename);
 		
+		// overrides
 		void refresh();
 		void onKey(curses::KeyCode key);
 		string getTitle();
 		void close();
 		
+		// new methods
 		void drawStatusBar(Pane* pane, curses::Window win);
 		void updateScreen(curses::Window win, bool cursorOnly);
 		void offsetToLine(unsigned offset, unsigned& line, unsigned& col);
 		int lineToOffset(unsigned line, unsigned col);
+		void saveBuffer();
+		void markAsUnsaved();
 	};
 }
 

@@ -42,6 +42,7 @@ namespace textx {
 	vector<App*> Pane::getApps() {throw exception();}
 	void Pane::addApp(App* app) {throw exception();}
 	void Pane::removeApp(App* app) {throw exception();}
+	void Pane::refreshTitleBar() {throw exception();}
 	void Pane::refresh() {throw exception();}
 	curses::Window Pane::getContent() {throw exception();}
 	curses::Window Pane::getStatusBar() {throw exception();}
@@ -89,22 +90,30 @@ namespace textx {
 		this->app = NULL;
 		app->setPane(NULL);
 	}
+	void AppPane::refreshTitleBar() {
+		borderColor.use(titleBar);
+		window.copyInto(titleBar, false);
+		if (app != NULL) {
+			titleBar.setCursor(0, 0);
+			titleBar.print(app->getTitle());
+		}
+		titleBar.refresh();
+	}
 	void AppPane::refresh() {
 		// draw border
-		ColorPair color = getColorPair(color::white, color::blue);
-		color.use(window);
+		borderColor.use(window);
 		window.drawBorder();
 		
-		//draw title
+		// draw title TODO no code duplication
+		borderColor.use(titleBar);
+		window.copyInto(titleBar, false);
 		if (app != NULL) {
-			color.use(titleBar);
-			window.copyInto(titleBar, false);
 			titleBar.setCursor(0, 0);
 			titleBar.print(app->getTitle());
 		}
 		
 		// setup drawing for status bar
-		color.use(statusBar);
+		borderColor.use(statusBar);
 		
 		// ensure curses does its thing
 		window.refresh();
