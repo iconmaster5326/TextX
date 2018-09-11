@@ -16,6 +16,7 @@
 # Executables
 *.exe
 /textx
+/key_tester
 
 # Core dumps
 *.stacktrace
