@@ -19,16 +19,22 @@ $(EXE_NAME): $(O_FILES)
 $(O_FILES): build/%.o: src/%.cpp build $(HXX_FILES)
 	$(CXX) -g -std=c++03 -Isrc -c -o $@ $<
 
+key_tester$(EXE_SUFFIX): src/key_tester/key_tester.cpp $(HXX_FILES)
+	$(CXX) -g -static -std=c++03 -Isrc -o key_tester src/key_tester/key_tester.cpp -lncurses $(LINUX_LINKFLAGS)
+
 build:
 	mkdir build
 
 # phony rules
-all: $(EXE_NAME)
+all: $(EXE_NAME) key_tester$(EXE_SUFFIX)
 
 clean:
-	rm -rf build textx textx.exe
+	rm -rf build
+
+spotless: clean
+	rm -rf textx textx.exe key_tester$(EXE_SUFFIX)
 
 run: $(EXE_NAME)
 	`readlink -f $(EXE_NAME)`
 
-.PHONY: clean run all
+.PHONY: clean spotless run all

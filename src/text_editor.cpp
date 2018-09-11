@@ -225,6 +225,7 @@ namespace textx {
 			buffer.erase(buffer.begin()+cursorOffset);
 			break;
 		}
+		case 127:
 		case KEY_BACKSPACE: {
 			if (cursorOffset == 0) break;
 			buffer.erase(buffer.begin()+cursorOffset-1);
