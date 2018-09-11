@@ -30,18 +30,6 @@ namespace textx {
 		unsaved = false;
 		// TODO load file into editor
 	};
-
-	static void drawStatusBar(Pane* pane, curses::Window win) {
-		int x, y; win.getCursor(x, y);
-		curses::Window status = pane->getStatusBar();
-		pane->clearStatusBar();
-		status.setCursor(0, 0);
-		status.printf("Line %d", y); // TODO fix
-		status.moveCursor(2, 0);
-		status.printf("Col %d", x);
-		
-		status.refresh();
-	}
 	
 	static void drawChar(curses::Window win, char c) {
 		switch (c) {
@@ -55,7 +43,20 @@ namespace textx {
 				win.print('?');
 			}
 		}
-
+	}
+	
+	void TextEditorApp::drawStatusBar(Pane* pane, curses::Window win) {
+		unsigned line, col; offsetToLine(cursorOffset, line, col);
+		
+		curses::Window status = pane->getStatusBar();
+		pane->clearStatusBar();
+		
+		status.setCursor(0, 0);
+		status.printf("Line %d", line+1);
+		status.moveCursor(2, 0);
+		status.printf("Col %d", col+1);
+		
+		status.refresh();
 	}
 	
 	void TextEditorApp::updateScreen(curses::Window win, bool cursorOnly) {
@@ -66,7 +67,7 @@ namespace textx {
 		
 		int x = 0, y = 0;
 		int w, h; win.getSize(w, h);
-		unsigned long currentOffset = offset;
+		unsigned currentOffset = offset;
 		TEBuffer::const_iterator it = buffer.begin()+offset;
 		int cx = 0, cy = 0;
 		
@@ -95,6 +96,43 @@ namespace textx {
 		
 		win.setCursor(cx, cy);
 		win.refresh();
+	}
+	
+	void TextEditorApp::offsetToLine(unsigned offset, unsigned& line, unsigned& col) {
+		col = 0; line = 0;
+		if (offset == 0) return;
+		
+		unsigned currentOffset = 0;
+		for (TEBuffer::const_iterator it = buffer.begin(); it != buffer.end(); it++) {
+			if (*it == '\n') {
+				col = 0;
+				line++;
+			} else {
+				col++;
+			}
+			
+			currentOffset++;
+			if (currentOffset == offset) return;
+		}
+		
+		// if we fall through, line and col are set to the end of the buffer
+	}
+	
+	int TextEditorApp::lineToOffset(unsigned line, unsigned col) {
+		if (line == 0) return col;
+		
+		unsigned currentLine = 0;
+		unsigned offset = 0;
+		for (TEBuffer::const_iterator it = buffer.begin(); it != buffer.end(); it++) {
+			if (*it == '\n') {
+				currentLine++;
+				if (currentLine == line) return offset+col;
+			}
+			offset++;
+		}
+		
+		// if we fall through, return the last line possible
+		return currentLine;
 	}
 	
 	void TextEditorApp::refresh() {
@@ -130,8 +168,6 @@ namespace textx {
 		
 		drawStatusBar(pane, win);
 		updateScreen(win, refreshCursorOnly);
-		
-		// TODO
 	}
 	
 	string TextEditorApp::getTitle() {

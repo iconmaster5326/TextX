@@ -10,6 +10,7 @@
 
 #include <string>
 #include <deque>
+#include <map>
 
 #include "app.hpp"
 
@@ -19,11 +20,9 @@ namespace textx {
 	typedef deque<char> TEBuffer;
 	
 	class TextEditorApp : public App {
-	private:
-		void updateScreen(curses::Window win, bool cursorOnly);
 	public:
 		TEBuffer buffer;
-		unsigned long offset, cursorOffset;
+		unsigned offset, cursorOffset;
 		string filename;
 		bool hasFilename;
 		bool unsaved;
@@ -35,6 +34,11 @@ namespace textx {
 		void onKey(curses::KeyCode key);
 		string getTitle();
 		void close();
+		
+		void drawStatusBar(Pane* pane, curses::Window win);
+		void updateScreen(curses::Window win, bool cursorOnly);
+		void offsetToLine(unsigned offset, unsigned& line, unsigned& col);
+		int lineToOffset(unsigned line, unsigned col);
 	};
 }
 
