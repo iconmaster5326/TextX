@@ -19,9 +19,11 @@ namespace textx {
 	typedef deque<char> TEBuffer;
 	
 	class TextEditorApp : public App {
+	private:
+		void updateScreen(curses::Window win, bool cursorOnly);
 	public:
 		TEBuffer buffer;
-		unsigned long offset;
+		unsigned long offset, cursorOffset;
 		string filename;
 		bool hasFilename;
 		bool unsaved;
