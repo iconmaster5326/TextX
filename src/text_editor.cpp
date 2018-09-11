@@ -21,6 +21,9 @@ namespace textx {
 		offset = 0; cursorOffset = 0;
 		hasFilename = false;
 		unsaved = true;
+		
+		string s = "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25";
+		buffer.insert(buffer.begin(), s.begin(), s.end());
 	};
 	
 	TextEditorApp::TextEditorApp(Pane* pane, string filename) : App(pane) {
@@ -164,16 +167,28 @@ namespace textx {
 			break;
 		}
 		case KEY_UP: {
-			refreshCursorOnly = true;
+			unsigned baseLine, dummy; offsetToLine(offset, baseLine, dummy);
 			unsigned line, col; offsetToLine(cursorOffset, line, col);
 			if (line == 0) break;
 			cursorOffset = lineToOffset(line-1, col);
+			
+			if (line-baseLine <= 0) {
+				offset = lineToOffset(baseLine-1, 0);
+			} else {
+				refreshCursorOnly = true;
+			}
 			break;
 		}
 		case KEY_DOWN: {
-			refreshCursorOnly = true;
+			unsigned baseLine, dummy; offsetToLine(offset, baseLine, dummy);
 			unsigned line, col; offsetToLine(cursorOffset, line, col);
 			cursorOffset = lineToOffset(line+1, col);
+			
+			if (line-baseLine >= win.height()-1) {
+				offset = lineToOffset(baseLine+1, 0);
+			} else {
+				refreshCursorOnly = true;
+			}
 			break;
 		}
 		default: {
