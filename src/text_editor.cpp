@@ -106,7 +106,7 @@ namespace textx {
 				break;
 			default:
 				if (!cursorOnly) drawChar(win, c);
-				x++;
+				x += charWidth(c, x);
 				if (x >= w) {
 					x = 0; y++;
 				}
@@ -134,7 +134,7 @@ namespace textx {
 				col = 0;
 				line++;
 			} else {
-				col++;
+				col+= charWidth(*it, col);
 			}
 			
 			currentOffset++;
@@ -155,7 +155,7 @@ namespace textx {
 				curLine++;
 				curCol = 0;
 			} else {
-				curCol++;
+				curCol+= charWidth(*it, curCol);
 			}
 			
 			offset++;
@@ -181,12 +181,18 @@ namespace textx {
 		switch (key.value) {
 		case KEY_LEFT: {
 			refreshCursorOnly = true;
-			if (cursorOffset > 0) cursorOffset--;
+			if (cursorOffset > 0) {
+				cursorOffset--;
+				while (cursorOffset > 0 && buffer[cursorOffset] == '\r') cursorOffset--;
+			}
 			break;
 		}
 		case KEY_RIGHT: {
 			refreshCursorOnly = true;
-			if (cursorOffset < buffer.size()) cursorOffset++;
+			if (cursorOffset < buffer.size()) {
+				cursorOffset++;
+				while (cursorOffset < buffer.size() && buffer[cursorOffset] == '\r') cursorOffset++;
+			};
 			break;
 		}
 		case KEY_UP: {
