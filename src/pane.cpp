@@ -49,15 +49,19 @@ namespace textx {
 	void Pane::initWindow(curses::Window window) {throw exception();}
 	
 	// AppPane
-	AppPane::AppPane(Pane* parent) {
+	AppPane::AppPane(Pane* parent) : borderColor(getColorPair(color::white, color::blue)) {
 		setParent(parent);
 		window = parent->getContent();
 		initWindow(window);
 	}
 	
-	AppPane::AppPane(curses::Window window) {
+	AppPane::AppPane(curses::Window window) : borderColor(getColorPair(color::white, color::blue)) {
 		this->window = window;
 		initWindow(window);
+	}
+	
+	AppPane::~AppPane() {
+		borderColor.dispose();
 	}
 	
 	vector<Pane*> AppPane::getChildren() {

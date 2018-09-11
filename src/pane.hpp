@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "curses.hpp"
+#include "colors.hpp"
 
 namespace textx {
 	using namespace std;
@@ -51,6 +52,7 @@ namespace textx {
 		void init();
 		
 		App* app = NULL;
+		ColorPair borderColor;
 		curses::Window window;
 		curses::Window content;
 		curses::Window statusBar;
@@ -60,6 +62,7 @@ namespace textx {
 	public:
 		AppPane(Pane* parent);
 		AppPane(curses::Window window);
+		~AppPane();
 		
 		vector<Pane*> getChildren();
 		void addChild(Pane* pane);

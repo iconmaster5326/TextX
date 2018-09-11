@@ -58,7 +58,17 @@ namespace textx {
 	}
 	
 	void Color::dispose() {
-		// TODO
+		unsigned char r, g, b;
+		curses::getColor(index, r, g, b);
+		int code = colorToInt(r, g, b);
+		if (colorsInUse.find(code) != colorsInUse.end()) {
+			colorsInUse[code].usages--;
+			if (colorsInUse[code].usages == 0) {
+				// free index for future use
+				colorsInUse.erase(code);
+				colorIndicesInUse.insert(index);
+			}
+		}
 	}
 	
 	ColorPair::ColorPair(short index) {
@@ -66,7 +76,18 @@ namespace textx {
 	}
 	
 	void ColorPair::dispose() {
-		// TODO
+		short fg, bg;
+		curses::getColorPair(index, fg, bg);
+		Color(fg).dispose(); Color(bg).dispose();
+		int code = pairToInt(fg, bg);
+		if (pairsInUse.find(code) != pairsInUse.end()) {
+			pairsInUse[code].usages--;
+			if (pairsInUse[code].usages == 0) {
+				// free index for future use
+				pairsInUse.erase(code);
+				pairIndicesInUse.insert(index);
+			}
+		}
 	}
 	
 	ColorPair getColorPair(Color fg, Color bg) {
@@ -92,6 +113,12 @@ namespace textx {
 	}
 	
 	Color getColor(unsigned char r, unsigned char g, unsigned char b) {
+		// truncate the color values, as curses.hpp does, so they convert to and from curses color values properly
+		// (if you don't do this, dispose() will attempt to dispose the wrong color!)
+		r = (((r/255.0)*1000.0)/1000.0)*255.0;
+		g = (((g/255.0)*1000.0)/1000.0)*255.0;
+		b = (((b/255.0)*1000.0)/1000.0)*255.0;
+		// check the cache
 		unsigned code = colorToInt(r, g, b);
 		if (colorsInUse.find(code) == colorsInUse.end()) {
 			short index = 8;
