@@ -36,7 +36,14 @@ int main(int argc, char** argv) {
 	drawMenuBar(menuBar);
 	
 	AppPane pane = AppPane(notMenuBar);
-	App* app = new TextEditorApp((Pane*)&pane);
+	App* app;
+	
+	if (argc <= 1) {
+		app = new TextEditorApp((Pane*)&pane);
+	} else {
+		app = new TextEditorApp((Pane*)&pane, argv[1]);
+	}
+	
 	pane.addApp(app);
 	setFocus(app);
 	
