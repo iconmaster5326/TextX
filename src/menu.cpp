@@ -30,23 +30,26 @@ namespace textx {
 		if (!inMenu) return;
 		
 		menuColor.use(menuWin);
-		menuWin.setBackgroundColor(menuColor.getIndex());
 		menuWin.drawBorder();
-		menuWin.refresh();
 		
 		int i = 0;
 		for (vector<MenuItem*>::const_iterator it = currentMenu->items.begin(); it != currentMenu->items.end(); it++) {
 			int w = menuWin.width()-2;
 			curses::Window menuItemWin(menuWin, 1, i+1, w, 1); menuItemWin.setScrollable(false);
+			menuColor.use(menuItemWin);
+			menuItemWin.setBackgroundColor(menuColor.getIndex());
 			(*it)->refresh(menuItemWin);
 			if (menuItemAt == i) {
 				menuItemWin.setCursor(0, 0);
 				menuItemWin.setAttributesAt(A_REVERSE, menuColor.getIndex(), w);
 			}
-			menuItemWin.refresh();
+			menuItemWin.copyInto(menuWin, false);
 			menuItemWin.dispose();
 			i++;
 		}
+		
+		menuWin.setCursor(1, menuItemAt+1);
+		menuWin.refresh();
 	}
 	
 	static curses::Window menuBar;
