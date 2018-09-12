@@ -23,8 +23,9 @@ int main(int argc, char** argv) {
 	Window notMenuBar = Window(0, 1, COLS, LINES-1);
 	
 	AppPane pane = AppPane(notMenuBar);
-	App* app;
+	getRootPanes()->push_back(&pane);
 	
+	App* app;
 	if (argc <= 1) {
 		app = new TextEditorApp((Pane*)&pane);
 	} else {
