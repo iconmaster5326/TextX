@@ -7,6 +7,7 @@
 
 #include <exception>
 #include <vector>
+#include <algorithm>
 
 #include "textx.hpp"
 #include "menu.hpp"
@@ -71,7 +72,10 @@ namespace textx {
 			menuBar.setCursor(0, 0);
 			MenuBar* bar = getFocus()->getMenuBar();
 			for (MenuBar::const_iterator it = bar->begin(); it != bar->end(); it++) {
+				vector<Menu*>::const_iterator inHistory = std::find(menuHistory.begin(), menuHistory.end(), &(*it));
+				if (inHistory != menuHistory.end()) menuBar.enableAttributes(A_REVERSE);
 				menuBar.print(it->name);
+				if (inHistory != menuHistory.end()) menuBar.disableAttributes(A_REVERSE);
 				menuBar.moveCursor(2, 0);
 			}
 		}
@@ -153,15 +157,52 @@ namespace textx {
 		}
 		
 		menuWin = curses::Window(0, 1, maxItemLen+2, nItems+2);
+		refreshMenuBar();
 		refreshMenu();
 	}
 	
 	void selectPrevMenu() {
-		// TODO
+		menuHistory.pop_back();
+		
+		if (menuHistory.empty()) {
+			if (getFocus() == NULL) {
+				exitMenu();
+			} else {
+				MenuBar* bar = getFocus()->getMenuBar();
+				int i = 0;
+				for (MenuBar::const_iterator it = bar->begin(); it != bar->end(); it++) {
+					if (currentMenu == &(*it)) {
+						selectMenu(&bar->at(i == 0 ? bar->size()-1 : i-1));
+						return;
+					}
+					i++;
+				}
+				exitMenu();
+			}
+		} else {
+			Menu* lastMenu = menuHistory[menuHistory.size()-1];
+			menuHistory.pop_back();
+			selectMenu(lastMenu);
+		}
 	}
 	
 	void selectNextMenu() {
-		// TODO
+		menuHistory.pop_back();
+		
+		if (getFocus() == NULL) {
+			exitMenu();
+		} else {
+			MenuBar* bar = getFocus()->getMenuBar();
+			int i = 0;
+			for (MenuBar::const_iterator it = bar->begin(); it != bar->end(); it++) {
+				if (currentMenu == &(*it)) {
+					selectMenu(&bar->at(i == bar->size()-1 ? 0 : i+1));
+					return;
+				}
+				i++;
+			}
+			exitMenu();
+		}
 	}
 	
 	void exitMenu() {
