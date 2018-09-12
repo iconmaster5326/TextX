@@ -39,23 +39,29 @@ int main(int argc, char** argv) {
 	pane.refresh();
 	
 	bool alt = false;
-	while (true) {
+	mainLoop: while (true) {
 		KeyCode key = notMenuBar.getKey();
 		
 		if (alt) {
 			alt = false;
 			
 			switch (key.value) {
-			case 27: // the user triple-escaped; eat the next ESC and send ESC to TextX
+			case 27: { // ESC
+				// the user double-escaped; send ESC to TextX and immediately grab the next char
 				if (inMenu) {
 					onKeyInMenu(key);
 				} else {
 					onKey(key);
 				}
-				notMenuBar.getKey();
+				
+				int escDelay = ESCDELAY;
+				set_escdelay(1);
+				key = notMenuBar.getKey();
+				set_escdelay(ESCDELAY);
+				break;
+			} default:
+				goto mainLoop;
 			}
-			
-			continue;
 		}
 		
 		switch (key.value) {
