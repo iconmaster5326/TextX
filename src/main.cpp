@@ -38,8 +38,26 @@ int main(int argc, char** argv) {
 	refreshMenuBar();
 	pane.refresh();
 	
+	bool alt = false;
 	while (true) {
 		KeyCode key = notMenuBar.getKey();
+		
+		if (alt) {
+			alt = false;
+			
+			switch (key.value) {
+			case 27: // the user triple-escaped; eat the next ESC and send ESC to TextX
+				if (inMenu) {
+					onKeyInMenu(key);
+				} else {
+					onKey(key);
+				}
+				notMenuBar.getKey();
+			}
+			
+			continue;
+		}
+		
 		switch (key.value) {
 		case KEY_F(1): selectMenu(0); break;
 		case KEY_F(2): selectMenu(1); break;
@@ -53,6 +71,9 @@ int main(int argc, char** argv) {
 		case KEY_F(10): selectMenu(9); break;
 		case KEY_F(11): selectMenu(10); break;
 		case KEY_F(12): selectMenu(11); break;
+		case 27: // escape
+			alt = true;
+			break;
 		case KEY_RESIZE:
 			refreshMenu();
 			refreshMenuBar();

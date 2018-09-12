@@ -25,14 +25,23 @@ namespace textx {
 		exit(0);
 	}
 	
+	static void menuFileRecent() {
+		// dummy
+	}
+	
 	void TextEditorApp::init() {
 		offset = 0; cursorOffset = 0;
 		
 		// build menu
+		vector<MenuItem*> fileRecentItems;
+		fileRecentItems.push_back(new ButtonMenuItem("test.txt", menuFileRecent));
+		fileRecentItems.push_back(new ButtonMenuItem("textx.cpp", menuFileRecent));
+		fileRecentItems.push_back(new ButtonMenuItem("Connection.java", menuFileRecent));
+		fileRecentItems.push_back(new ButtonMenuItem("Makefile", menuFileRecent));
+		
 		vector<MenuItem*> fileItems;
-		fileItems.push_back(new ButtonMenuItem("Exit One", menuFileExit));
-		fileItems.push_back(new ButtonMenuItem("Exit Two", menuFileExit));
-		fileItems.push_back(new ButtonMenuItem("Exit Three", menuFileExit));
+		fileItems.push_back(new SubMenuItem(Menu("Recent", fileRecentItems)));
+		fileItems.push_back(new ButtonMenuItem("Exit", menuFileExit));
 		menuBar.push_back(Menu("File", fileItems));
 		
 		vector<MenuItem*> editItems;

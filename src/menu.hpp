@@ -66,6 +66,18 @@ namespace textx {
 		void refresh(curses::Window window);
 		void onSelected();
 	};
+	
+	class SubMenuItem : public MenuItem {
+	public:
+		Menu menu;
+		
+		inline SubMenuItem(Menu menu) : menu(menu) {}
+		
+		bool leaf();
+		int getMinWidth();
+		void refresh(curses::Window window);
+		void onSelected();
+	};
 }
 
 #endif /* SRC_MENU_HPP_ */

@@ -119,6 +119,10 @@ namespace textx {
 			}
 			break;
 		}
+		case 27: { // escape
+			exitMenu();
+			break;
+		}
 		}
 	}
 	
@@ -168,6 +172,7 @@ namespace textx {
 			if (getFocus() == NULL) {
 				exitMenu();
 			} else {
+				// try to move left
 				MenuBar* bar = getFocus()->getMenuBar();
 				int i = 0;
 				for (MenuBar::const_iterator it = bar->begin(); it != bar->end(); it++) {
@@ -177,6 +182,8 @@ namespace textx {
 					}
 					i++;
 				}
+				
+				// if we fall through, we're not in a menu bar; we should exit
 				exitMenu();
 			}
 		} else {
@@ -192,6 +199,7 @@ namespace textx {
 		if (getFocus() == NULL) {
 			exitMenu();
 		} else {
+			// try to move right
 			MenuBar* bar = getFocus()->getMenuBar();
 			int i = 0;
 			for (MenuBar::const_iterator it = bar->begin(); it != bar->end(); it++) {
@@ -201,7 +209,8 @@ namespace textx {
 				}
 				i++;
 			}
-			exitMenu();
+			
+			// if we fall through, do nothing; we're in a submenu
 		}
 	}
 	
@@ -210,9 +219,11 @@ namespace textx {
 			menuWin.dispose();
 			menuColor.dispose();
 		}
+		currentMenu = NULL;
 		menuHistory.clear();
 		inMenu = false;
 		
+		refreshMenuBar();
 		refreshBackground();
 	}
 	
@@ -239,5 +250,23 @@ namespace textx {
 	
 	int ButtonMenuItem::getMinWidth() {
 		return text.size();
+	}
+	
+	// SubMenuItem
+	bool SubMenuItem::leaf() {
+		return false;
+	}
+	
+	int SubMenuItem::getMinWidth() {
+		return menu.name.size()+2;
+	}
+
+	void SubMenuItem::refresh(curses::Window window) {
+		window.print(menu.name);
+		window.print(" >");
+	}
+
+	void SubMenuItem::onSelected() {
+		selectMenu(&menu);
 	}
 }
