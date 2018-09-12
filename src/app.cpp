@@ -34,6 +34,6 @@ namespace textx {
 	
 	void App::refresh() {throw exception();}
 	string App::getTitle() {throw exception();}
-	void App::close() {throw exception();}
 	void App::onKey(curses::KeyCode key) {throw exception();}
+	MenuBar* App::getMenuBar() {throw exception();}
 }

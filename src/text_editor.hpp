@@ -13,6 +13,7 @@
 #include <map>
 
 #include "app.hpp"
+#include "menu.hpp"
 
 namespace textx {
 	using namespace std;
@@ -20,6 +21,9 @@ namespace textx {
 	typedef deque<char> TEBuffer;
 	
 	class TextEditorApp : public App {
+	private:
+		MenuBar menuBar;
+		void init();
 	public:
 		TEBuffer buffer;
 		unsigned offset, cursorOffset;
@@ -34,7 +38,7 @@ namespace textx {
 		void refresh();
 		void onKey(curses::KeyCode key);
 		string getTitle();
-		void close();
+		MenuBar* getMenuBar();
 		
 		// new methods
 		void drawStatusBar(Pane* pane, curses::Window win);

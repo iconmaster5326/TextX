@@ -17,12 +17,15 @@
 namespace textx {
 	using namespace std;
 	
-	class App;
+	class App; class Pane;
 	
 	// app control
 	App* getFocus();
 	void setFocus(App* app);
 	vector<App*>* getAllApps();
+	
+	// pane control
+	vector<Pane*>* getRootPanes();
 	
 	// event handlers
 	void onKey(curses::KeyCode key);

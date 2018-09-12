@@ -11,6 +11,7 @@
 #include <string>
 
 #include "curses.hpp"
+#include "menu.hpp"
 
 namespace textx {
 	using namespace std;
@@ -33,7 +34,7 @@ namespace textx {
 		virtual void refresh();
 		virtual void onKey(curses::KeyCode key);
 		virtual string getTitle();
-		virtual void close();
+		virtual MenuBar* getMenuBar();
 	};
 }
 

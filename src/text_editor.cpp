@@ -20,14 +20,37 @@
 namespace textx {
 	using namespace std;
 	
-	TextEditorApp::TextEditorApp(Pane* pane) : App(pane) {
+	static void menuFileExit() {
+		curses::stopCurses();
+		exit(0);
+	}
+	
+	void TextEditorApp::init() {
 		offset = 0; cursorOffset = 0;
+		
+		// build menu
+		vector<MenuItem*> fileItems;
+		fileItems.push_back(new ButtonMenuItem("Exit One", menuFileExit));
+		fileItems.push_back(new ButtonMenuItem("Exit Two", menuFileExit));
+		fileItems.push_back(new ButtonMenuItem("Exit Three", menuFileExit));
+		menuBar.push_back(Menu("File", fileItems));
+		
+		vector<MenuItem*> editItems;
+		editItems.push_back(new ButtonMenuItem("Exit", menuFileExit));
+		editItems.push_back(new ButtonMenuItem("Exit (but really long to show off dynamic menu size)", menuFileExit));
+		menuBar.push_back(Menu("Edit", editItems));
+	}
+	
+	TextEditorApp::TextEditorApp(Pane* pane) : App(pane) {
+		init();
+		
 		hasFilename = false;
 		unsaved = true;
 	};
 	
 	TextEditorApp::TextEditorApp(Pane* pane, string filename) : App(pane) {
-		offset = 0; cursorOffset = 0;
+		init();
+		
 		this->filename = filename;
 		hasFilename = true;
 		unsaved = false;
@@ -282,7 +305,7 @@ namespace textx {
 		return (unsaved ? "*" : "") + (hasFilename ? filename : "(untitled)");
 	}
 	
-	void TextEditorApp::close() {
-		
+	MenuBar* TextEditorApp::getMenuBar() {
+		return &menuBar;
 	}
 }

@@ -8,12 +8,14 @@
 
 #include "textx.hpp"
 #include "app.hpp"
+#include "pane.hpp"
 
 namespace textx {
 	using namespace std;
 	
 	static App* focus;
 	static vector<App*> apps;
+	static vector<Pane*> rootPanes;
 	
 	App* getFocus() {
 		return focus;
@@ -25,6 +27,10 @@ namespace textx {
 	
 	vector<App*>* getAllApps() {
 		return &apps;
+	}
+	
+	vector<Pane*>* getRootPanes() {
+		return &rootPanes;
 	}
 	
 	void onKey(curses::KeyCode key) {

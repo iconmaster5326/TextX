@@ -37,7 +37,4 @@ clean:
 spotless: clean
 	rm -rf textx textx.exe key_tester$(EXE_SUFFIX)
 
-run: $(EXE_NAME)
-	`readlink -f $(EXE_NAME)`
-
-.PHONY: clean spotless run all
+.PHONY: clean spotless all

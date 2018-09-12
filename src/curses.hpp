@@ -123,6 +123,10 @@ namespace curses {
 			// TODO delwin(raw);
 		}
 		
+		inline void dispose() {
+			delwin(raw);
+		}
+		
 		inline void copyInto(Window dst, bool isoverlay) {
 			if (isoverlay)
 				overlay(raw, dst.raw);
@@ -241,6 +245,10 @@ namespace curses {
 			wattroff(raw, attrs);
 		}
 		
+		inline void setBackground(chtype attributes) {
+			wbkgd(raw, attributes);
+		}
+		
 		// TODO: this doesn't compile in some versions of ncurses
 //		inline attr_t getAttributes() {
 //			attr_t attrs;
@@ -263,6 +271,14 @@ namespace curses {
 		
 		inline void setAttributesAtLine(attr_t attrs, short pair) {
 			wchgat(raw, -1, attrs, pair, NULL);
+		}
+		
+		inline void setBackground(chtype attributes, short colorPair) {
+			wbkgd(raw, attributes | COLOR_PAIR(colorPair));
+		}
+		
+		inline void setBackgroundColor(short colorPair) {
+			wbkgd(raw, COLOR_PAIR(colorPair));
 		}
 		
 		// window info
