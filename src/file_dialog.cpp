@@ -32,6 +32,7 @@ namespace textx {
 		win.setCursor(w/2-header.size()/2, 1);
 		win.print(header);
 		
+		win.drawBorder(lineEditor.x-1, lineEditor.y-1, lineEditor.w+2, 3);
 		lineEditor.refresh();
 		win.refresh();
 	}

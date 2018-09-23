@@ -144,7 +144,7 @@ namespace curses {
 		}
 		
 		// output
-		inline void print(char c) {
+		inline void print(chtype c) {
 			waddch(raw, c);
 		}
 		
@@ -204,19 +204,36 @@ namespace curses {
 			wborder(raw, chars[0], chars[1], chars[2], chars[3], chars[4], chars[5], chars[6], chars[7]);
 		}
 		
-		inline void drawHLine(char ch) {
+		inline void drawBorder(int x, int y, int w, int h) {
+			setCursor(x, y);
+			print(ACS_ULCORNER);
+			drawHLine(ACS_HLINE, w-2);
+			setCursor(x+w-1, y);
+			print(ACS_URCORNER);
+			setCursor(x, y+1);
+			drawVLine(ACS_VLINE, h-2);
+			setCursor(x+w-1, y+1);
+			drawVLine(ACS_VLINE, h-2);
+			setCursor(x, y+h-1);
+			print(ACS_LLCORNER);
+			drawHLine(ACS_HLINE, w-2);
+			setCursor(x+w-1, y+h-1);
+			print(ACS_LRCORNER);
+		}
+		
+		inline void drawHLine(chtype ch) {
 			whline(raw, ch, 99999999);
 		}
 		
-		inline void drawVLine(char ch) {
+		inline void drawVLine(chtype ch) {
 			wvline(raw, ch, 99999999);
 		}
 		
-		inline void drawHLine(char ch, int n) {
+		inline void drawHLine(chtype ch, int n) {
 			whline(raw, ch, n);
 		}
 		
-		inline void drawVLine(char ch, int n) {
+		inline void drawVLine(chtype ch, int n) {
 			wvline(raw, ch, n);
 		}
 		
