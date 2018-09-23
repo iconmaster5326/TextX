@@ -106,6 +106,7 @@ namespace textx {
 		if (!cursorOnly) {
 			win.clear();
 			win.setCursor(0, 0);
+			if (selectingText && offset >= selBeginOffset) win.enableAttributes(A_REVERSE);
 		}
 		
 		int x = 0, y = 0;
@@ -329,7 +330,7 @@ namespace textx {
 			break;
 		}
 		case KEY_SRIGHT: {
-			if (cursorOffset >= buffer.size()-1) break;
+			if (cursorOffset >= buffer.size()) break;
 			cursorOffset++;
 			
 			if (selectingText) {

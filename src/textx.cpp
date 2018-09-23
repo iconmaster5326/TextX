@@ -79,9 +79,9 @@ namespace textx {
 			throw exception();
 		}
 		
-		HGLOBAL hglobal = GlobalAlloc(GMEM_MOVEABLE, s.size());
+		HGLOBAL hglobal = GlobalAlloc(GMEM_MOVEABLE, s.size()+1);
 		LPTSTR lptstr = (LPTSTR) GlobalLock(hglobal); 
-		memcpy(lptstr, s.c_str(), s.size());
+		memcpy(lptstr, s.c_str(), s.size()+1);
 		GlobalUnlock(hglobal);
 		HANDLE handle = SetClipboardData(CF_TEXT, hglobal);
 		if (!handle) {
