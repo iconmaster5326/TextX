@@ -33,16 +33,8 @@ int main(int argc, char** argv) {
 		app = new TextEditorApp((Pane*)&pane, argv[1]);
 	}
 	
-	App* app2;
-	if (argc <= 2) {
-		app2 = new TextEditorApp((Pane*)&pane);
-	} else {
-		app2 = new TextEditorApp((Pane*)&pane, argv[2]);
-	}
-	
 	pane.addApp(app);
-	pane.addApp(app2);
-	setFocus(app2);
+	setFocus(app);
 	
 	refreshMenuBar();
 	pane.refresh();

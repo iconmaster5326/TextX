@@ -26,12 +26,29 @@ namespace textx {
 		exit(0);
 	}
 	
+	static void menuFileOpen() {
+		
+	}
+	
+	static void menuFileSave() {
+		TextEditorApp* editor = dynamic_cast<TextEditorApp*>(getFocus());
+		if (!editor) throw "Menu not for this app";
+		editor->saveBuffer();
+	}
+	
+	static void menuFileClose() {
+		
+	}
+	
 	void TextEditorApp::init() {
 		offset = 0; cursorOffset = 0;
 		selectingText = false;
 		
 		// build file menu
 		vector<MenuItem*> fileItems;
+		fileItems.push_back(new ButtonMenuItem("Open...", menuFileOpen));
+		fileItems.push_back(new ButtonMenuItem("Save", menuFileSave));
+		fileItems.push_back(new ButtonMenuItem("Close", menuFileClose));
 		fileItems.push_back(new ButtonMenuItem("Exit", menuFileExit));
 		menuBar.push_back(Menu("File", fileItems));
 	}
