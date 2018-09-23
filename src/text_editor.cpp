@@ -133,6 +133,9 @@ namespace textx {
 				cy = y;
 			}
 			
+			if (!cursorOnly && selectingText && currentOffset == selBeginOffset-1) win.enableAttributes(A_REVERSE);
+			if (!cursorOnly && selectingText && currentOffset == selEndOffset-1) win.disableAttributes(A_REVERSE);
+			
 			it++; currentOffset++;
 		}
 		
@@ -219,7 +222,12 @@ namespace textx {
 			refreshCursorOnly = true;
 			break;
 		case KEY_LEFT: {
-			refreshCursorOnly = true;
+			if (selectingText) {
+				selectingText = false;
+			} else {
+				refreshCursorOnly = true;
+			}
+			
 			if (cursorOffset > 0) {
 				cursorOffset--;
 				while (cursorOffset > 0 && buffer[cursorOffset] == '\r') cursorOffset--;
@@ -227,7 +235,12 @@ namespace textx {
 			break;
 		}
 		case KEY_RIGHT: {
-			refreshCursorOnly = true;
+			if (selectingText) {
+				selectingText = false;
+			} else {
+				refreshCursorOnly = true;
+			}
+			
 			if (cursorOffset < buffer.size()) {
 				cursorOffset++;
 				while (cursorOffset < buffer.size() && buffer[cursorOffset] == '\r') cursorOffset++;
@@ -245,6 +258,11 @@ namespace textx {
 			} else {
 				refreshCursorOnly = true;
 			}
+			
+			if (selectingText) {
+				selectingText = false;
+				refreshCursorOnly = false;
+			}
 			break;
 		}
 		case KEY_DOWN: {
@@ -257,23 +275,82 @@ namespace textx {
 			} else {
 				refreshCursorOnly = true;
 			}
+			
+			if (selectingText) {
+				selectingText = false;
+				refreshCursorOnly = false;
+			}
 			break;
 		}
 		case KEY_DC: {
-			if (cursorOffset >= buffer.size()) break;
-			buffer.erase(buffer.begin()+cursorOffset);
+			if (selectingText) {
+				buffer.erase(buffer.begin()+selBeginOffset, buffer.begin()+selEndOffset);
+				cursorOffset = selBeginOffset;
+				selectingText = false;
+			} else {
+				if (cursorOffset >= buffer.size()) break;
+				buffer.erase(buffer.begin()+cursorOffset);
+			}
+			
 			markAsUnsaved();
 			break;
 		}
 		case 127:
 		case KEY_BACKSPACE: {
-			if (cursorOffset == 0) break;
-			buffer.erase(buffer.begin()+cursorOffset-1);
-			cursorOffset--;
+			if (selectingText) {
+				buffer.erase(buffer.begin()+selBeginOffset, buffer.begin()+selEndOffset);
+				cursorOffset = selBeginOffset;
+				selectingText = false;
+			} else {
+				if (cursorOffset == 0) break;
+				buffer.erase(buffer.begin()+cursorOffset-1);
+				cursorOffset--;
+			}
+			
 			markAsUnsaved();
 			break;
 		}
+		case KEY_SLEFT: {
+			if (cursorOffset == 0) break;
+			cursorOffset--;
+			
+			if (selectingText) {
+				if (cursorOffset < selBeginOffset) {
+					selBeginOffset--;
+				} else {
+					selEndOffset--;
+				}
+			} else {
+				selectingText = true;
+				selBeginOffset = cursorOffset;
+				selEndOffset = cursorOffset+1;
+			}
+			break;
+		}
+		case KEY_SRIGHT: {
+			if (cursorOffset >= buffer.size()-1) break;
+			cursorOffset++;
+			
+			if (selectingText) {
+				if (cursorOffset <= selEndOffset) {
+					selBeginOffset++;
+				} else {
+					selEndOffset++;
+				}
+			} else {
+				selectingText = true;
+				selBeginOffset = cursorOffset-1;
+				selEndOffset = cursorOffset;
+			}
+			break;
+		}
 		default: {
+			if (selectingText) {
+				buffer.erase(buffer.begin()+selBeginOffset, buffer.begin()+selEndOffset);
+				cursorOffset = selBeginOffset;
+				selectingText = false;
+			}
+			
 			buffer.insert(buffer.begin()+cursorOffset, key.value);
 			cursorOffset++;
 			

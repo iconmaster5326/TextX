@@ -26,10 +26,9 @@ namespace textx {
 		void init();
 	public:
 		TEBuffer buffer;
-		unsigned offset, cursorOffset;
 		string filename;
-		bool hasFilename;
-		bool unsaved;
+		unsigned offset, cursorOffset, selBeginOffset, selEndOffset;
+		bool hasFilename, unsaved, selectingText;
 		
 		TextEditorApp(Pane* pane);
 		TextEditorApp(Pane* pane, string filename);
