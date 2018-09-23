@@ -8,6 +8,7 @@
 #include "app_pane.hpp"
 #include "app.hpp"
 #include "colors.hpp"
+#include "textx.hpp"
 
 namespace textx {
 	using namespace std;
@@ -57,6 +58,7 @@ namespace textx {
 		window.copyInto(titleBar, false);
 		if (app != NULL) {
 			titleBar.setCursor(0, 0);
+			if (getFocus() == app) titleBar.enableAttributes(A_REVERSE);
 			titleBar.print(app->getTitle());
 		}
 		titleBar.refresh();
@@ -71,6 +73,7 @@ namespace textx {
 		window.copyInto(titleBar, false);
 		if (app != NULL) {
 			titleBar.setCursor(0, 0);
+			if (getFocus() == app) titleBar.enableAttributes(A_REVERSE);
 			titleBar.print(app->getTitle());
 		}
 		
