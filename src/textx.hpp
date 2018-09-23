@@ -19,6 +19,10 @@ namespace textx {
 	
 	class App; class Pane;
 	
+	// clipboard control
+	string getClipboard();
+	void setClipboard(string s);
+	
 	// app control
 	App* getFocus();
 	void setFocus(App* app);

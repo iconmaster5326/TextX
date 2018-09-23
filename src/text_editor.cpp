@@ -7,6 +7,7 @@
 
 #include "text_editor.hpp"
 
+#include "textx.hpp"
 #include "pane.hpp"
 #include "app.hpp"
 #include "colors.hpp"
@@ -390,6 +391,35 @@ namespace textx {
 				selBeginOffset = oldCursor;
 				selEndOffset = cursorOffset;
 			}
+			
+			break;
+		}
+		case 24: { // ^X: cut
+			if (!selectingText) return;
+			setClipboard(string(buffer.begin()+selBeginOffset, buffer.begin()+selEndOffset));
+			
+			buffer.erase(buffer.begin()+selBeginOffset, buffer.begin()+selEndOffset);
+			cursorOffset = selBeginOffset;
+			selectingText = false;
+			
+			break;
+		}
+		case 3: { // ^C: copy
+			if (!selectingText) return;
+			setClipboard(string(buffer.begin()+selBeginOffset, buffer.begin()+selEndOffset));
+			
+			break;
+		}
+		case 22: { // ^V: paste
+			if (selectingText) {
+				buffer.erase(buffer.begin()+selBeginOffset, buffer.begin()+selEndOffset);
+				cursorOffset = selBeginOffset;
+				selectingText = false;
+			}
+			
+			string clip = getClipboard();
+			buffer.insert(buffer.begin()+cursorOffset, clip.begin(), clip.end());
+			cursorOffset += clip.size();
 			
 			break;
 		}

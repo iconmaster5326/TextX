@@ -13,6 +13,16 @@
 namespace textx {
 	using namespace std;
 	
+	static string clipboard;
+	
+	string getClipboard() {
+		return clipboard;
+	}
+	
+	void setClipboard(string s) {
+		clipboard = s;
+	}
+	
 	static App* focus;
 	static vector<App*> apps;
 	static vector<Pane*> rootPanes;
