@@ -64,6 +64,8 @@ namespace textx {
 			menuBar.dispose();
 			menuBar = curses::Window(0, 0, COLS, 1);
 			menuBar.setScrollable(false);
+		} else {
+			menuBar.clear();
 		}
 		
 		color::pair::system.use(menuBar);
@@ -244,8 +246,8 @@ namespace textx {
 	}
 	
 	void ButtonMenuItem::onSelected() {
-		handler();
 		exitMenu();
+		handler();
 	}
 	
 	int ButtonMenuItem::getMinWidth() {

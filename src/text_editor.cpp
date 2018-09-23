@@ -11,6 +11,8 @@
 #include "pane.hpp"
 #include "app.hpp"
 #include "colors.hpp"
+#include "app_pane.hpp"
+#include "file_dialog.hpp"
 
 #include <cstdlib>
 #include <cctype>
@@ -26,8 +28,36 @@ namespace textx {
 		exit(0);
 	}
 	
-	static void menuFileOpen() {
+	static App* menuFileOpenFocus;
+	
+	static void menuFileOpenHandler(bool ok, string path, void* filePane) {
+		delete ((Pane*)filePane);
 		
+		if (ok) {
+			TextEditorApp* app = new TextEditorApp(menuFileOpenFocus->getPane(), path);
+			menuFileOpenFocus->getPane()->addApp(app);
+			setFocus(app);
+		}
+		
+		refreshMenuBar();
+		vector<Pane*>* panes = getRootPanes();
+		for (vector<Pane*>::const_iterator it = panes->begin(); it != panes->end(); it++) {
+			(*it)->refresh();
+		}
+	}
+	
+	static void menuFileOpen() {
+		menuFileOpenFocus = getFocus();
+		
+		curses::Window screen = curses::Window(0, 1, COLS, LINES-1);
+		AppPane* filePane = new AppPane(screen);
+		
+		FileDialogApp* fileApp = new FileDialogApp(filePane, "", menuFileOpenHandler, filePane);
+		filePane->addApp(fileApp);
+		setFocus(fileApp);
+		
+		refreshMenuBar();
+		filePane->refresh();
 	}
 	
 	static void menuFileSave() {
