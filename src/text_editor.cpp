@@ -344,6 +344,55 @@ namespace textx {
 			}
 			break;
 		}
+		case KEY_SR: { // shift-up
+			unsigned oldCursor = cursorOffset;
+			unsigned baseLine, dummy; offsetToLine(offset, baseLine, dummy);
+			unsigned line, col; offsetToLine(cursorOffset, line, col);
+			if (line == 0) break;
+			cursorOffset = lineToOffset(line-1, col);
+			
+			if (line-baseLine <= 0) {
+				offset = lineToOffset(baseLine-1, 0);
+			}
+			
+			if (selectingText) {
+				if (cursorOffset < selBeginOffset) {
+					selBeginOffset = cursorOffset;
+				} else {
+					selEndOffset = cursorOffset;
+				}
+			} else {
+				selectingText = true;
+				selBeginOffset = cursorOffset;
+				selEndOffset = oldCursor;
+			}
+			
+			break;
+		}
+		case KEY_SF: { // shift-down
+			unsigned oldCursor = cursorOffset;
+			unsigned baseLine, dummy; offsetToLine(offset, baseLine, dummy);
+			unsigned line, col; offsetToLine(cursorOffset, line, col);
+			cursorOffset = lineToOffset(line+1, col);
+			
+			if (line-baseLine >= win.height()-1) {
+				offset = lineToOffset(baseLine+1, 0);
+			}
+			
+			if (selectingText) {
+				if (cursorOffset <= selEndOffset) {
+					selBeginOffset = cursorOffset;
+				} else {
+					selEndOffset = cursorOffset;
+				}
+			} else {
+				selectingText = true;
+				selBeginOffset = oldCursor;
+				selEndOffset = cursorOffset;
+			}
+			
+			break;
+		}
 		default: {
 			if (selectingText) {
 				buffer.erase(buffer.begin()+selBeginOffset, buffer.begin()+selEndOffset);
