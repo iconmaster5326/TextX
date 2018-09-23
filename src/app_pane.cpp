@@ -26,6 +26,7 @@ namespace textx {
 	
 	AppPane::~AppPane() {
 		borderColor.dispose();
+		if (app != NULL) delete app;
 	}
 	
 	vector<Pane*> AppPane::getChildren() {

@@ -15,7 +15,7 @@ namespace textx {
 	using namespace std;
 	
 	Pane::~Pane() {
-		// TODO
+		
 	}
 	
 	void Pane::setParent(Pane* pane) {

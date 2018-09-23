@@ -28,6 +28,10 @@ namespace textx {
 	
 	TabPane::~TabPane() {
 		borderColor.dispose();
+		
+		for (list<App*>::const_iterator it = apps.begin(); it != apps.end(); it++) {
+			delete *it;
+		}
 	}
 	
 	vector<Pane*> TabPane::getChildren() {
@@ -58,7 +62,6 @@ namespace textx {
 		if (it != apps.end()) {
 			apps.erase(it);
 		}
-		app->setPane(NULL);
 	}
 	void TabPane::refreshTitleBar() {
 		borderColor.use(titleBar);

@@ -28,6 +28,32 @@ namespace textx {
 		exit(0);
 	}
 	
+	static void closeApp(App* app) {
+		// exit if we're the only app
+		if (getAllApps()->size() == 1) {
+			curses::stopCurses();
+			exit(0);
+		}
+		
+		// close this editor
+		app->getPane()->removeApp(app);
+		
+		// find the new app
+		vector<App*> apps = app->getPane()->getApps();
+		if (apps.empty()) {
+			setFocus(NULL);
+		} else {
+			setFocus(apps.front());
+			app->getPane()->addApp(apps.front());
+		}
+		
+		// refresh
+		app->getPane()->refresh();
+		
+		// free memory
+		delete app;
+	}
+	
 	static App* menuFileOpenFocus;
 	
 	static void menuFileOpenHandler(bool ok, string path, void* filePane) {
@@ -67,7 +93,7 @@ namespace textx {
 	}
 	
 	static void menuFileClose() {
-		
+		closeApp(getFocus());
 	}
 	
 	void TextEditorApp::init() {

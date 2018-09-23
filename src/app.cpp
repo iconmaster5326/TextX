@@ -9,6 +9,7 @@
 #include "pane.hpp"
 #include "textx.hpp"
 
+#include <algorithm>
 #include <exception>
 
 namespace textx {
@@ -21,6 +22,10 @@ namespace textx {
 	}
 	
 	App::~App() {
+		vector<App*>* apps = getAllApps();
+		vector<App*>::iterator it = find(apps->begin(),apps->end(), this);
+		if (it != apps->end()) apps->erase(it);
+		
 		// TODO
 	}
 	
