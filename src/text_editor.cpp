@@ -38,13 +38,15 @@ namespace textx {
 		// close this editor
 		app->getPane()->removeApp(app);
 		
-		// find the new app
-		vector<App*> apps = app->getPane()->getApps();
-		if (apps.empty()) {
-			setFocus(NULL);
-		} else {
-			setFocus(apps.front());
-			app->getPane()->addApp(apps.front());
+		// find a new app if needed
+		if (app == getFocus()) {
+			vector<App*> apps = app->getPane()->getApps();
+			if (apps.empty()) {
+				setFocus(NULL);
+			} else {
+				setFocus(apps.front());
+				app->getPane()->addApp(apps.front());
+			}
 		}
 		
 		// refresh
@@ -62,6 +64,12 @@ namespace textx {
 		if (ok) {
 			TextEditorApp* app = new TextEditorApp(menuFileOpenFocus->getPane(), path);
 			menuFileOpenFocus->getPane()->addApp(app);
+			
+			TextEditorApp* teApp = dynamic_cast<TextEditorApp*>(menuFileOpenFocus);
+			if (teApp && !teApp->hasFilename && teApp->buffer.empty()) {
+				closeApp(teApp);
+			}
+			
 			setFocus(app);
 		}
 		
