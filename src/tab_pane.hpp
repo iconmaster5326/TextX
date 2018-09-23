@@ -1,23 +1,24 @@
 /*
- * app_pane.hpp
+ * tab_pane.hpp
  *
  *  Created on: Sep 23, 2018
  *      Author: iconmaster
  */
 
-#ifndef SRC_APP_PANE_HPP_
-#define SRC_APP_PANE_HPP_
+#ifndef SRC_TAB_PANE_HPP_
+#define SRC_TAB_PANE_HPP_
+
+#include <list>
 
 #include "pane.hpp"
 
 namespace textx {
 	using namespace std;
 	
-	class AppPane : public Pane {
+	class TabPane : public Pane {
 	private:
 		void init();
 		
-		App* app = NULL;
 		ColorPair borderColor;
 		curses::Window window;
 		curses::Window content;
@@ -26,9 +27,12 @@ namespace textx {
 	protected:
 		curses::Window getTitleBar();
 	public:
-		AppPane(Pane* parent);
-		AppPane(curses::Window window);
-		~AppPane();
+		App* currentTab = NULL;
+		list<App*> apps;
+		
+		TabPane(Pane* parent);
+		TabPane(curses::Window window);
+		~TabPane();
 		
 		vector<Pane*> getChildren();
 		void addChild(Pane* pane);
@@ -45,4 +49,4 @@ namespace textx {
 	};
 }
 
-#endif /* SRC_APP_PANE_HPP_ */
+#endif /* SRC_TAB_PANE_HPP_ */

@@ -37,6 +37,8 @@ namespace textx {
 	
 	// pane control
 	vector<Pane*>* getRootPanes();
+	void selectLeftPane();
+	void selectRightPane();
 	
 	// event handlers
 	void onKey(curses::KeyCode key);

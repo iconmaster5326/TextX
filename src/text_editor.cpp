@@ -28,6 +28,7 @@ namespace textx {
 	
 	void TextEditorApp::init() {
 		offset = 0; cursorOffset = 0;
+		selectingText = false;
 		
 		// build file menu
 		vector<MenuItem*> fileItems;

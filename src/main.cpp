@@ -12,7 +12,7 @@
 #include "colors.hpp"
 #include "menu.hpp"
 
-#include "app_pane.hpp"
+#include "tab_pane.hpp"
 #include "text_editor.hpp"
 
 using namespace std;
@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
 	startCurses();
 	Window notMenuBar = Window(0, 1, COLS, LINES-1);
 	
-	AppPane pane = AppPane(notMenuBar);
+	TabPane pane = TabPane(notMenuBar);
 	getRootPanes()->push_back(&pane);
 	
 	App* app;
@@ -33,8 +33,16 @@ int main(int argc, char** argv) {
 		app = new TextEditorApp((Pane*)&pane, argv[1]);
 	}
 	
+	App* app2;
+	if (argc <= 2) {
+		app2 = new TextEditorApp((Pane*)&pane);
+	} else {
+		app2 = new TextEditorApp((Pane*)&pane, argv[2]);
+	}
+	
 	pane.addApp(app);
-	setFocus(app);
+	pane.addApp(app2);
+	setFocus(app2);
 	
 	refreshMenuBar();
 	pane.refresh();
@@ -66,18 +74,6 @@ int main(int argc, char** argv) {
 		}
 		
 		switch (key.value) {
-		case KEY_F(1): selectMenu(0); break;
-		case KEY_F(2): selectMenu(1); break;
-		case KEY_F(3): selectMenu(2); break;
-		case KEY_F(4): selectMenu(3); break;
-		case KEY_F(5): selectMenu(4); break;
-		case KEY_F(6): selectMenu(5); break;
-		case KEY_F(7): selectMenu(6); break;
-		case KEY_F(8): selectMenu(7); break;
-		case KEY_F(9): selectMenu(8); break;
-		case KEY_F(10): selectMenu(9); break;
-		case KEY_F(11): selectMenu(10); break;
-		case KEY_F(12): selectMenu(11); break;
 		case 27: // escape
 			alt = true;
 			break;
