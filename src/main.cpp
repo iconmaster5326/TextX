@@ -12,6 +12,7 @@
 #include "colors.hpp"
 #include "menu.hpp"
 
+#include "app_pane.hpp"
 #include "text_editor.hpp"
 
 using namespace std;
