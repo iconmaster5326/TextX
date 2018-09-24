@@ -72,7 +72,7 @@ namespace textx {
 		
 		if (getFocus() != NULL) {
 			menuBar.setCursor(0, 0);
-			MenuBar* bar = getFocus()->getMenuBar();
+			MenuBar* bar = &getFocus()->info->menuBar;
 			for (MenuBar::const_iterator it = bar->begin(); it != bar->end(); it++) {
 				vector<Menu*>::const_iterator inHistory = std::find(menuHistory.begin(), menuHistory.end(), &(*it));
 				if (inHistory != menuHistory.end()) menuBar.enableAttributes(A_REVERSE);
@@ -130,7 +130,7 @@ namespace textx {
 	
 	void selectMenu(int index) {
 		if (index < 0 || getFocus() == NULL) return;
-		MenuBar* bar = getFocus()->getMenuBar();
+		MenuBar* bar = &getFocus()->info->menuBar;
 		if (index >= bar->size()) return;
 		selectMenu(&bar->at(index));
 	}
@@ -168,7 +168,7 @@ namespace textx {
 				exitMenu();
 			} else {
 				// try to move left
-				MenuBar* bar = getFocus()->getMenuBar();
+				MenuBar* bar = &getFocus()->info->menuBar;
 				int i = 0;
 				for (MenuBar::const_iterator it = bar->begin(); it != bar->end(); it++) {
 					if (currentMenu == &(*it)) {
@@ -195,7 +195,7 @@ namespace textx {
 			exitMenu();
 		} else {
 			// try to move right
-			MenuBar* bar = getFocus()->getMenuBar();
+			MenuBar* bar = &getFocus()->info->menuBar;
 			int i = 0;
 			for (MenuBar::const_iterator it = bar->begin(); it != bar->end(); it++) {
 				if (currentMenu == &(*it)) {

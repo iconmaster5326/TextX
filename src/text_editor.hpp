@@ -22,7 +22,6 @@ namespace textx {
 	
 	class TextEditorApp : public App {
 	private:
-		MenuBar menuBar;
 		void init();
 	public:
 		TEBuffer buffer;
@@ -37,7 +36,6 @@ namespace textx {
 		void refresh();
 		void onKey(curses::KeyCode key);
 		string getTitle();
-		MenuBar* getMenuBar();
 		
 		// new methods
 		void drawStatusBar(Pane* pane, curses::Window win);

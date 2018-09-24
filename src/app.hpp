@@ -24,6 +24,7 @@ namespace textx {
 	public:
 		string name;
 		HotkeyStore hotkeys;
+		MenuBar menuBar;
 		
 		inline AppInfo() {}
 		inline AppInfo(string name) {
@@ -53,7 +54,6 @@ namespace textx {
 		virtual void refresh();
 		virtual void onKey(curses::KeyCode key);
 		virtual string getTitle();
-		virtual MenuBar* getMenuBar();
 	};
 	
 	extern set<AppInfo*> allApps;

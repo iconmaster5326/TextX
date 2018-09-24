@@ -56,8 +56,4 @@ namespace textx {
 	string textx::FileDialogApp::getTitle() {
 		return "Choose a File";
 	}
-
-	MenuBar* textx::FileDialogApp::getMenuBar() {
-		return &menuBar;
-	}
 }

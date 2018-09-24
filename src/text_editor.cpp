@@ -23,16 +23,6 @@
 namespace textx {
 	using namespace std;
 	
-	class TextEditorAppInfo : public AppInfo {
-	public:
-		TextEditorAppInfo() : AppInfo("Text Editor") {}
-		App* open(Pane* pane) {
-			TextEditorApp* app = new TextEditorApp(pane);
-			return app;
-		}
-	};
-	static TextEditorAppInfo appInfo;
-	
 	static void menuFileExit() {
 		curses::stopCurses();
 		exit(0);
@@ -85,28 +75,37 @@ namespace textx {
 		delete focus;
 	}
 	
-	void TextEditorApp::init() {
-		offset = 0; cursorOffset = 0;
-		selectingText = false;
-		
-		// build file menu
-		vector<MenuItem*> fileItems;
-		fileItems.push_back(new ButtonMenuItem("Open...", menuFileOpen));
-		fileItems.push_back(new ButtonMenuItem("Save", menuFileSave));
-		fileItems.push_back(new ButtonMenuItem("Close", menuFileClose));
-		fileItems.push_back(new ButtonMenuItem("Exit", menuFileExit));
-		menuBar.push_back(Menu("File", fileItems));
-	}
+	class TextEditorAppInfo : public AppInfo {
+	public:
+		TextEditorAppInfo() : AppInfo("Text Editor") {
+			// add hotkeys
+			
+			// build file menu
+			vector<MenuItem*> fileItems;
+			fileItems.push_back(new ButtonMenuItem("Open...", menuFileOpen));
+			fileItems.push_back(new ButtonMenuItem("Save", menuFileSave));
+			fileItems.push_back(new ButtonMenuItem("Close", menuFileClose));
+			fileItems.push_back(new ButtonMenuItem("Exit", menuFileExit));
+			menuBar.push_back(Menu("File", fileItems));
+		}
+		App* open(Pane* pane) {
+			TextEditorApp* app = new TextEditorApp(pane);
+			return app;
+		}
+	};
+	static TextEditorAppInfo appInfo;
 	
 	TextEditorApp::TextEditorApp(Pane* pane) : App(&appInfo, pane) {
-		init();
+		offset = cursorOffset = selBeginOffset = selEndOffset = 0;
+		selectingText = false;
 		
 		hasFilename = false;
 		unsaved = true;
 	};
 	
 	TextEditorApp::TextEditorApp(Pane* pane, string filename) : App(&appInfo, pane) {
-		init();
+		offset = cursorOffset = selBeginOffset = selEndOffset = 0;
+		selectingText = false;
 		
 		this->filename = filename;
 		hasFilename = true;
@@ -516,9 +515,5 @@ namespace textx {
 	
 	string TextEditorApp::getTitle() {
 		return (unsaved ? "*" : "") + (hasFilename ? filename : "(untitled)");
-	}
-	
-	MenuBar* TextEditorApp::getMenuBar() {
-		return &menuBar;
 	}
 }

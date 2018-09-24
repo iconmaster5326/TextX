@@ -22,7 +22,6 @@ namespace textx {
 	
 	class FileDialogApp : public App {
 	private:
-		MenuBar menuBar;
 		LineEditor lineEditor;
 	public:
 		FileDialogHandler handler;
@@ -34,7 +33,6 @@ namespace textx {
 		void refresh();
 		void onKey(curses::KeyCode key);
 		string getTitle();
-		MenuBar* getMenuBar();
 	};
 }
 
