@@ -26,15 +26,17 @@ int main(int argc, char** argv) {
 	TabPane pane = TabPane(notMenuBar);
 	getRootPanes()->push_back(&pane);
 	
-	App* app;
 	if (argc <= 1) {
-		app = new TextEditorApp((Pane*)&pane);
+		App* app = new TextEditorApp((Pane*)&pane);
+		pane.addApp(app);
+		setFocus(app);
 	} else {
-		app = new TextEditorApp((Pane*)&pane, argv[1]);
+		for (int i = 1; i < argc; i++) {
+			App* app = new TextEditorApp((Pane*)&pane, string(argv[i]));
+			pane.addApp(app);
+			setFocus(app);
+		}
 	}
-	
-	pane.addApp(app);
-	setFocus(app);
 	
 	refreshMenuBar();
 	pane.refresh();
