@@ -41,6 +41,16 @@ namespace textx {
 	void selectRightPane();
 	
 	// event handlers
+	const int ALTKEY = 512;
+	inline int MAKE_ALTKEY(int keycode) {
+		return keycode | ALTKEY;
+	}
+	inline bool IS_ALTKEY(int keycode) {
+		return keycode & ALTKEY;
+	}
+	inline int GET_ALTKEY(int keycode) {
+		return keycode & ~ALTKEY;
+	}
 	void onKey(curses::KeyCode key);
 	
 	// screen control

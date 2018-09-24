@@ -62,8 +62,10 @@ int main(int argc, char** argv) {
 				key = notMenuBar.getKey();
 				set_escdelay(escDelay);
 				break;
-			} default:
-				goto mainLoop;
+			} default: {
+				// an alt-modified key; tack on our ALT flag and continue processing it below
+				key.value = MAKE_ALTKEY(key.value);
+			}
 			}
 		}
 		
