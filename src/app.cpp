@@ -15,7 +15,6 @@
 namespace textx {
 	using namespace std;
 	
-	// App
 	App::App(Pane* pane) {
 		this->pane = pane;
 		getAllApps()->push_back(this);
@@ -27,6 +26,31 @@ namespace textx {
 		if (it != apps->end()) apps->erase(it);
 		
 		// TODO
+	}
+	
+	void App::close() {
+		// exit TextX if we're the only app TODO do something else
+		if (getAllApps()->size() == 1) {
+			curses::stopCurses();
+			exit(0);
+		}
+		
+		// close this editor
+		getPane()->removeApp(this);
+		
+		// find a new app if needed
+		if (this == getFocus()) {
+			vector<App*> apps = getPane()->getApps();
+			if (apps.empty()) {
+				setFocus(NULL);
+			} else {
+				setFocus(apps.front());
+				getPane()->addApp(apps.front());
+			}
+		}
+		
+		// refresh
+		getPane()->refresh();
 	}
 	
 	void App::setPane(Pane* pane) {

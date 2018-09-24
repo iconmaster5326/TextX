@@ -29,6 +29,7 @@ namespace textx {
 			return pane;
 		}
 		void setPane(Pane* pane);
+		void close();
 		
 		// abstract methods
 		virtual void refresh();
