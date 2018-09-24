@@ -14,6 +14,7 @@
 #include "app.hpp"
 #include "pane.hpp"
 #include "tab_pane.hpp"
+#include "menu.hpp"
 
 #if TEXTX_WINDOWS
 #include "windows.h"
@@ -175,6 +176,15 @@ namespace textx {
 		case KEY_F(11): selectMenu(10); break;
 		case KEY_F(12): selectMenu(11); break;
 		default: focus->onKey(key);
+		}
+	}
+	
+	void refreshTextX() {
+		refreshMenuBar();
+		
+		vector<Pane*>* panes = getRootPanes();
+		for (vector<Pane*>::const_iterator it = panes->begin(); it != panes->end(); it++) {
+			(*it)->refresh();
 		}
 	}
 }

@@ -135,17 +135,10 @@ namespace textx {
 		selectMenu(&bar->at(index));
 	}
 	
-	static void refreshBackground() {
-		vector<Pane*>* panes = getRootPanes();
-		for (vector<Pane*>::const_iterator it = panes->begin(); it != panes->end(); it++) {
-			(*it)->refresh();
-		}
-	}
-	
 	void selectMenu(Menu* menu) {
 		if (inMenu) {
 			menuWin.dispose();
-			refreshBackground();
+			refreshTextX();
 		} else {
 			inMenu = true;
 			menuColor = getColorPair(color::white, color::blue);
@@ -225,8 +218,7 @@ namespace textx {
 		menuHistory.clear();
 		inMenu = false;
 		
-		refreshMenuBar();
-		refreshBackground();
+		refreshTextX();
 	}
 	
 	// MenuItem

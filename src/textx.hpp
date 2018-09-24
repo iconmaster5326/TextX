@@ -42,6 +42,9 @@ namespace textx {
 	
 	// event handlers
 	void onKey(curses::KeyCode key);
+	
+	// screen control
+	void refreshTextX();
 }
 
 

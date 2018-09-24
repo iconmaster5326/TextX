@@ -73,11 +73,7 @@ namespace textx {
 			setFocus(app);
 		}
 		
-		refreshMenuBar();
-		vector<Pane*>* panes = getRootPanes();
-		for (vector<Pane*>::const_iterator it = panes->begin(); it != panes->end(); it++) {
-			(*it)->refresh();
-		}
+		refreshTextX();
 	}
 	
 	static void menuFileOpen() {
