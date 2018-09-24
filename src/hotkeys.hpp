@@ -26,6 +26,16 @@ namespace textx {
 		virtual void fire();
 	};
 	
+	class BasicHotkey : public Hotkey {
+	public:
+		typedef void (*BasicHotkeyHandler)();
+		
+		BasicHotkeyHandler handler;
+		
+		BasicHotkey(string name, BasicHotkeyHandler handler);
+		void fire();
+	};
+	
 	class HotkeyStore : public map<int,Hotkey*> {
 	public:
 		set<Hotkey*> unbound;

@@ -21,6 +21,14 @@ namespace textx {
 	void Hotkey::fire() {
 		throw "hotkey didn't implement fire()!";
 	}
+	
+	BasicHotkey::BasicHotkey(string name, BasicHotkeyHandler handler) : Hotkey(name) {
+		this->handler = handler;
+	}
+	
+	void BasicHotkey::fire() {
+		handler();
+	}
 
 	void HotkeyStore::addHotkey(Hotkey* key) {
 		unbound.insert(key);
