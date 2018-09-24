@@ -15,7 +15,16 @@
 namespace textx {
 	using namespace std;
 	
-	App::App(Pane* pane) {
+	set<AppInfo*> allApps;
+	
+	AppInfo::~AppInfo() {}
+
+	App* AppInfo::open(Pane* pane) {
+		throw "app cannot be opened";
+	}
+	
+	App::App(AppInfo* info, Pane* pane) {
+		this->info = info;
 		this->pane = pane;
 		getAllApps()->push_back(this);
 	}

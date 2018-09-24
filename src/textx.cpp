@@ -15,6 +15,7 @@
 #include "pane.hpp"
 #include "tab_pane.hpp"
 #include "menu.hpp"
+#include "hotkeys.hpp"
 
 #if TEXTX_WINDOWS
 #include "windows.h"
@@ -22,6 +23,8 @@
 
 namespace textx {
 	using namespace std;
+	
+	HotkeyStore globalHotkeys;
 	
 #if TEXTX_WINDOWS
 	static HWND ourHwnd = NULL;
@@ -154,6 +157,12 @@ namespace textx {
 	}
 	
 	void onKey(curses::KeyCode key) {
+		Hotkey* hotkey = getHotkey(key.value);
+		if (hotkey) {
+			hotkey->fire();
+			return;
+		}
+		
 		switch (key.value) {
 		case 543: { // alt-left
 			selectLeftPane();

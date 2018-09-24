@@ -11,13 +11,25 @@
 #include "app.hpp"
 #include "colors.hpp"
 #include "menu.hpp"
-
+#include "hotkeys.hpp"
 #include "tab_pane.hpp"
 #include "text_editor.hpp"
+
+#include <cstdlib>
 
 using namespace std;
 using namespace curses;
 using namespace textx;
+
+class HotkeyQuit : public Hotkey {
+public:
+	HotkeyQuit() : Hotkey("Quit") {}
+	void fire() {
+		curses::stopCurses();
+		exit(0);
+	}
+};
+static HotkeyQuit hotkeyQuit;
 
 int main(int argc, char** argv) {
 	startCurses();
@@ -40,6 +52,8 @@ int main(int argc, char** argv) {
 	
 	refreshMenuBar();
 	pane.refresh();
+	
+	globalHotkeys[17] = &hotkeyQuit; // ^Q: quit
 	
 	bool alt = false;
 	mainLoop: while (true) {

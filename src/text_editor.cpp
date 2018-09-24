@@ -23,6 +23,16 @@
 namespace textx {
 	using namespace std;
 	
+	class TextEditorAppInfo : public AppInfo {
+	public:
+		TextEditorAppInfo() : AppInfo("Text Editor") {}
+		App* open(Pane* pane) {
+			TextEditorApp* app = new TextEditorApp(pane);
+			return app;
+		}
+	};
+	static TextEditorAppInfo appInfo;
+	
 	static void menuFileExit() {
 		curses::stopCurses();
 		exit(0);
@@ -88,14 +98,14 @@ namespace textx {
 		menuBar.push_back(Menu("File", fileItems));
 	}
 	
-	TextEditorApp::TextEditorApp(Pane* pane) : App(pane) {
+	TextEditorApp::TextEditorApp(Pane* pane) : App(&appInfo, pane) {
 		init();
 		
 		hasFilename = false;
 		unsaved = true;
 	};
 	
-	TextEditorApp::TextEditorApp(Pane* pane, string filename) : App(pane) {
+	TextEditorApp::TextEditorApp(Pane* pane, string filename) : App(&appInfo, pane) {
 		init();
 		
 		this->filename = filename;

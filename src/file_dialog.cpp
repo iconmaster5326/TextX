@@ -6,11 +6,19 @@
  */
 
 #include "file_dialog.hpp"
+#include "app.hpp"
+#include "pane.hpp"
 
 namespace textx {
 	using namespace std;
 	
-	textx::FileDialogApp::FileDialogApp(Pane* thePane, string suggested, FileDialogHandler handler, void* cookie) : App(thePane) {
+	class FileDialogAppInfo : public AppInfo {
+	public:
+		FileDialogAppInfo() : AppInfo() {}
+	};
+	static FileDialogAppInfo appInfo;
+	
+	textx::FileDialogApp::FileDialogApp(Pane* thePane, string suggested, FileDialogHandler handler, void* cookie) : App(&appInfo, thePane) {
 		curses::Window win = thePane->getContent();
 		int w, h; win.getSize(w, h);
 		lineEditor = LineEditor(win, 2, h/2, w-4, suggested);

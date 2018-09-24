@@ -24,7 +24,7 @@
 namespace textx {
 	using namespace std;
 	
-	class App; class Pane;
+	class App; class Pane; class HotkeyStore;
 	
 	// clipboard control
 	string getClipboard();
@@ -51,7 +51,9 @@ namespace textx {
 	inline int GET_ALTKEY(int keycode) {
 		return keycode & ~ALTKEY;
 	}
+	
 	void onKey(curses::KeyCode key);
+	extern HotkeyStore globalHotkeys;
 	
 	// screen control
 	void refreshTextX();
