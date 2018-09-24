@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 				int escDelay = ESCDELAY;
 				set_escdelay(1);
 				key = notMenuBar.getKey();
-				set_escdelay(ESCDELAY);
+				set_escdelay(escDelay);
 				break;
 			} default:
 				goto mainLoop;
