@@ -101,6 +101,8 @@ namespace textx {
 		
 		hasFilename = false;
 		unsaved = true;
+		
+		fileType = file_type::c;
 	};
 	
 	TextEditorApp::TextEditorApp(Pane* pane, string filename) : App(&appInfo, pane) {
@@ -110,6 +112,8 @@ namespace textx {
 		this->filename = filename;
 		hasFilename = true;
 		unsaved = false;
+		
+		fileType = file_type::c;
 		
 		// load file into buffer
 		ifstream file(filename.c_str());
@@ -161,6 +165,9 @@ namespace textx {
 		status.moveCursor(2, 0);
 		status.printf("Col %d", col+1);
 		
+		status.setCursor(status.width() - fileType->name.size(), 0);
+		status.print(fileType->name);
+		
 		status.refresh();
 	}
 	
@@ -174,10 +181,20 @@ namespace textx {
 		int x = 0, y = 0;
 		int w, h; win.getSize(w, h);
 		unsigned currentOffset = offset;
-		TEBuffer::const_iterator it = buffer.begin()+offset;
+		string::const_iterator it = buffer.begin()+offset;
 		int cx = 0, cy = 0;
 		
+		Token token = Token(0, color::pair::system, 0);
+		
 		while (y < h && it != buffer.end()) {
+			if (token.length <= 0) {
+				token = fileType->getToken(buffer, currentOffset);
+				win.setAttributes(token.attribues);
+				token.color.use(win);
+				if (token.length <= 0) token.length = LINES * COLS;
+			}
+			token.length--;
+			
 			char c = *it;
 			switch (c) {
 			case '\n':
@@ -212,7 +229,7 @@ namespace textx {
 		if (offset <= 0) return;
 		
 		unsigned currentOffset = 0;
-		for (TEBuffer::const_iterator it = buffer.begin(); it != buffer.end(); it++) {
+		for (string::const_iterator it = buffer.begin(); it != buffer.end(); it++) {
 			if (*it == '\n') {
 				col = 0;
 				line++;
@@ -230,7 +247,7 @@ namespace textx {
 	int TextEditorApp::lineToOffset(unsigned line, unsigned col) {
 		unsigned offset = 0, curLine = 0, curCol = 0;
 		
-		for (TEBuffer::const_iterator it = buffer.begin(); it != buffer.end(); it++) {
+		for (string::const_iterator it = buffer.begin(); it != buffer.end(); it++) {
 			if (line == curLine && col == curCol) return offset;
 			
 			if (*it == '\n') {

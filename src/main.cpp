@@ -14,6 +14,7 @@
 #include "hotkeys.hpp"
 #include "tab_pane.hpp"
 #include "text_editor.hpp"
+#include "file_types.hpp"
 
 #include <cstdlib>
 
@@ -32,9 +33,14 @@ public:
 static HotkeyQuit hotkeyQuit;
 
 int main(int argc, char** argv) {
+	// init curses
 	startCurses();
 	Window notMenuBar = Window(0, 1, COLS, LINES-1);
 	
+	// init file types
+	initAllFileTypes();
+	
+	// init panes
 	TabPane pane = TabPane(notMenuBar);
 	getRootPanes()->push_back(&pane);
 	

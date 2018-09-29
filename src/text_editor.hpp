@@ -14,20 +14,20 @@
 
 #include "app.hpp"
 #include "menu.hpp"
+#include "file_types.hpp"
 
 namespace textx {
 	using namespace std;
-	
-	typedef deque<char> TEBuffer;
 	
 	class TextEditorApp : public App {
 	private:
 		void init();
 	public:
-		TEBuffer buffer;
+		string buffer;
 		string filename;
 		unsigned offset, cursorOffset, selBeginOffset, selEndOffset;
 		bool hasFilename, unsaved, selectingText;
+		FileType* fileType;
 		
 		TextEditorApp(Pane* pane);
 		TextEditorApp(Pane* pane, string filename);
