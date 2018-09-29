@@ -62,6 +62,10 @@ namespace curses {
 			return BUTTON_TRIPLE_CLICK(event.bstate, n) != 0;
 		}
 		
+		inline bool button(int n) {
+			return down(n) || up(n) || click(n) || doubleClick(n) || tripleClick(n);
+		}
+		
 		inline bool move() {
 			return (event.bstate & ~(BUTTON_SHIFT | BUTTON_ALT | BUTTON_CTRL)) == 0;
 		}
