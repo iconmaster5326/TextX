@@ -45,6 +45,7 @@ namespace textx {
 	void refreshMenu();
 	void refreshMenuBar();
 	void onKeyInMenu(curses::KeyCode key);
+	void onMouseInMenu(curses::MouseEvent mevent);
 	
 	void selectMenu(int index);
 	void selectMenu(Menu* menu);

@@ -71,11 +71,7 @@ int main(int argc, char** argv) {
 			switch (key.value) {
 			case 27: { // ESC
 				// the user double-escaped; send ESC to TextX and immediately grab the next char
-				if (inMenu) {
-					onKeyInMenu(key);
-				} else {
-					onKey(key);
-				}
+				onKey(key);
 				
 				int escDelay = ESCDELAY;
 				set_escdelay(1);
@@ -102,11 +98,7 @@ int main(int argc, char** argv) {
 			pane.initWindow(notMenuBar);
 			break;
 		default:
-			if (inMenu) {
-				onKeyInMenu(key);
-			} else {
-				onKey(key);
-			}
+			onKey(key);
 		}
 	}
 	

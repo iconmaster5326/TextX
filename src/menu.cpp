@@ -128,10 +128,32 @@ namespace textx {
 		}
 	}
 	
+	void onMouseInMenu(curses::MouseEvent mevent) {
+		int mx = mevent.x();
+		if (inMenu && mevent.y() != 0) {
+			// event on a menu item
+		} else {
+			// event on the menu bar
+			int x = 0;
+			MenuBar& bar = getFocus()->info->menuBar;
+			for (MenuBar::iterator it = bar.begin(); it != bar.end(); it++) {
+				int xMax = x + it->name.size();
+				if (mx >= x && mx < xMax) {
+					exitMenu();
+					selectMenu(&*it);
+					break;
+				}
+				x = xMax + 2;
+			}
+		}
+	}
+	
 	void selectMenu(int index) {
 		if (index < 0 || getFocus() == NULL) return;
 		MenuBar* bar = &getFocus()->info->menuBar;
 		if (index >= bar->size()) return;
+		
+		exitMenu();
 		selectMenu(&bar->at(index));
 	}
 	

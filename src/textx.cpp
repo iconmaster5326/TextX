@@ -164,8 +164,15 @@ namespace textx {
 		}
 		
 		switch (key.value) {
-		case KEY_MOUSE: { // mouse; broadcast to all root panes to see if they'd like to handle it
+		case KEY_MOUSE: {
 			curses::MouseEvent mevent = key.asMouseEvent();
+			
+			// if it's the menu bar, select the right menu
+			if (inMenu || mevent.y() == 0) {
+				onMouseInMenu(mevent);
+			}
+			
+			// broadcast to all root panes to see if they'd like to handle it
 			vector<Pane*>* panes = getRootPanes();
 			for (vector<Pane*>::const_iterator it = panes->begin(); it != panes->end(); it++) {
 				Pane* pane = *it;
@@ -193,7 +200,12 @@ namespace textx {
 		case KEY_F(10): selectMenu(9); break;
 		case KEY_F(11): selectMenu(10); break;
 		case KEY_F(12): selectMenu(11); break;
-		default: focus->onKey(key);
+		default: {
+			if (inMenu)
+				onKeyInMenu(key);
+			else
+				focus->onKey(key);
+		}
 		}
 	}
 	
