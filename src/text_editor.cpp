@@ -28,16 +28,16 @@ namespace textx {
 		exit(0);
 	}
 	
-	static App* menuFileOpenFocus;
+	static App* menuFocus;
 	
 	static void menuFileOpenHandler(bool ok, string path, void* filePane) {
 		delete ((Pane*)filePane);
 		
 		if (ok) {
-			TextEditorApp* app = new TextEditorApp(menuFileOpenFocus->getPane(), path);
-			menuFileOpenFocus->getPane()->addApp(app);
+			TextEditorApp* app = new TextEditorApp(menuFocus->getPane(), path);
+			menuFocus->getPane()->addApp(app);
 			
-			TextEditorApp* teApp = dynamic_cast<TextEditorApp*>(menuFileOpenFocus);
+			TextEditorApp* teApp = dynamic_cast<TextEditorApp*>(menuFocus);
 			if (teApp && !teApp->hasFilename && teApp->buffer.empty()) {
 				teApp->close();
 				delete teApp;
@@ -50,7 +50,7 @@ namespace textx {
 	}
 	
 	static void menuFileOpen() {
-		menuFileOpenFocus = getFocus();
+		menuFocus = getFocus();
 		
 		curses::Window screen = curses::Window(0, 1, COLS, LINES-1);
 		AppPane* filePane = new AppPane(screen);
@@ -75,18 +75,46 @@ namespace textx {
 		delete focus;
 	}
 	
+	class FileTypeMenuItem : public ButtonMenuItem {
+	public:
+		FileType* ft;
+		FileTypeMenuItem(FileType* ft) : ButtonMenuItem(ft->name, NULL), ft(ft) {}
+		void onSelected() {
+			exitMenu();
+			((TextEditorApp*)getFocus())->fileType = ft;
+			getFocus()->refresh();
+		}
+	};
+	
 	class TextEditorAppInfo : public AppInfo {
 	public:
 		TextEditorAppInfo() : AppInfo("Text Editor") {
 			// add hotkeys
 			
-			// build file menu
+			// build menu
+			initAllFileTypes();
+			vector<MenuItem*> fileTypes;
+			for (set<FileType*>::const_iterator it = allFileTypes.begin(); it != allFileTypes.end(); it++) {
+				fileTypes.push_back(new FileTypeMenuItem(*it));
+			}
+			if (fileTypes.empty()) throw "FILE TYPES EMPTY";
+			
+			//// File
 			vector<MenuItem*> fileItems;
 			fileItems.push_back(new ButtonMenuItem("Open...", menuFileOpen));
 			fileItems.push_back(new ButtonMenuItem("Save", menuFileSave));
 			fileItems.push_back(new ButtonMenuItem("Close", menuFileClose));
 			fileItems.push_back(new ButtonMenuItem("Exit", menuFileExit));
 			menuBar.push_back(Menu("File", fileItems));
+			//// View
+			vector<MenuItem*> viewItems;
+			viewItems.push_back(new SubMenuItem(Menu("File Type", fileTypes)));
+			menuBar.push_back(Menu("View", viewItems));
+			//// Window
+			vector<MenuItem*> windowItems;
+			windowItems.push_back(new ButtonMenuItem("Next Tab", selectRightPane));
+			windowItems.push_back(new ButtonMenuItem("Previous Tab", selectLeftPane));
+			menuBar.push_back(Menu("Window", windowItems));
 		}
 		App* open(Pane* pane) {
 			TextEditorApp* app = new TextEditorApp(pane);

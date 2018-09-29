@@ -184,6 +184,8 @@ namespace textx {
 	}
 	
 	void initAllFileTypes() {
+		if (!allFileTypes.empty()) return;
+		
 		allFileTypes.insert(file_type::none);
 		allFileTypes.insert(file_type::c);
 	}

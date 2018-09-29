@@ -34,7 +34,7 @@ namespace textx {
 		string name;
 		vector<MenuItem*> items;
 		
-		inline Menu(string name) : name(name), items(items) {}
+		inline Menu(string name) : name(name) {}
 		inline Menu(string name, vector<MenuItem*> items) : name(name), items(items) {}
 	};
 	
