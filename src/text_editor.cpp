@@ -208,17 +208,55 @@ namespace textx {
 	}
 	
 	void TextEditorApp::updateScreen(curses::Window win, bool cursorOnly) {
+		unsigned line, dummy; offsetToLine(offset, line, dummy);
+		int w, h; win.getSize(w, h);
+		
+		// find size of the gutter
+		int xMin = 1;
+		
+		int maxLineNo = line+h;
+		do {
+			maxLineNo /= 10;
+			xMin++; 
+		} while (maxLineNo);
+		
 		if (!cursorOnly) {
 			win.clear();
+			
+			// draw gutter
 			win.setCursor(0, 0);
+			win.setAttributes(A_BOLD);
+			getColorPair(color::yellow, color::black).use(win);
+			
+			for (int y = 0; y < h; y++) {
+				win.setCursor(0, y);
+				win.printf("%d", line+1);
+				win.setCursor(xMin-1, y);
+				win.print(ACS_VLINE);
+				
+				int len = lineSize(line);
+				while (len > w-xMin) {
+					len -= w-xMin;
+					y++;
+					win.setCursor(xMin-1, y);
+					win.print(ACS_VLINE);
+				}
+				
+				line++;
+			}
+			
+			win.setAttributes(0);
+			color::pair::system.use(win);
+			
+			// initialize state for drawing pane
+			win.setCursor(xMin, 0);
 			if (selectingText && offset >= selBeginOffset) win.enableAttributes(A_REVERSE);
 		}
 		
-		int x = 0, y = 0;
-		int w, h; win.getSize(w, h);
+		int x = xMin, y = 0;
 		unsigned currentOffset = offset;
 		string::const_iterator it = buffer.begin()+offset;
-		int cx = 0, cy = 0;
+		int cx = xMin, cy = 0;
 		
 		Token token = Token(0, color::pair::system, 0);
 		
@@ -237,14 +275,18 @@ namespace textx {
 			char c = *it;
 			switch (c) {
 			case '\n':
-				x = 0; y++;
-				if (!cursorOnly && y < h) win.print('\n');
+				x = xMin; y++;
+				if (!cursorOnly && y < h) {
+					win.print('\n');
+					win.moveCursor(xMin, 0);
+				}
 				break;
 			default:
 				if (!cursorOnly) drawChar(win, c);
 				x += charWidth(c, x);
 				if (x >= w) {
-					x = 0; y++;
+					x = xMin; y++;
+					if (!cursorOnly) win.moveCursor(xMin, 0);
 				}
 			}
 			
@@ -299,6 +341,16 @@ namespace textx {
 		
 		// if we fall through, return the last offset possible
 		return offset;
+	}
+	
+	int TextEditorApp::lineSize(unsigned line) {
+		int offset = lineToOffset(line, 0);
+		int found = buffer.find('\n', offset);
+		if (found == string::npos) {
+			return buffer.size()-offset;
+		} else {
+			return found-offset;
+		}
 	}
 	
 	void TextEditorApp::saveBuffer() {

@@ -43,6 +43,7 @@ namespace textx {
 		void updateScreen(curses::Window win, bool cursorOnly);
 		void offsetToLine(unsigned offset, unsigned& line, unsigned& col);
 		int lineToOffset(unsigned line, unsigned col);
+		int lineSize(unsigned line);
 		void saveBuffer();
 		void markAsUnsaved();
 	};
