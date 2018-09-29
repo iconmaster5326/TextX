@@ -195,6 +195,9 @@ namespace textx {
 			}
 			token.length--;
 			
+			if (!cursorOnly && selectingText && currentOffset >= selBeginOffset) win.enableAttributes(A_REVERSE);
+			if (!cursorOnly && selectingText && currentOffset >= selEndOffset) win.disableAttributes(A_REVERSE);
+			
 			char c = *it;
 			switch (c) {
 			case '\n':
@@ -213,9 +216,6 @@ namespace textx {
 				cx = x;
 				cy = y;
 			}
-			
-			if (!cursorOnly && selectingText && currentOffset == selBeginOffset-1) win.enableAttributes(A_REVERSE);
-			if (!cursorOnly && selectingText && currentOffset == selEndOffset-1) win.disableAttributes(A_REVERSE);
 			
 			it++; currentOffset++;
 		}
