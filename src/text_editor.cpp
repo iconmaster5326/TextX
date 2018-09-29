@@ -102,7 +102,7 @@ namespace textx {
 		hasFilename = false;
 		unsaved = true;
 		
-		fileType = file_type::c;
+		fileType = file_type::none;
 	};
 	
 	TextEditorApp::TextEditorApp(Pane* pane, string filename) : App(&appInfo, pane) {
@@ -113,7 +113,15 @@ namespace textx {
 		hasFilename = true;
 		unsaved = false;
 		
-		fileType = file_type::c;
+		// find file type (if possible)
+		fileType = file_type::none;
+		for (set<FileType*>::const_iterator it = allFileTypes.begin(); it != allFileTypes.end(); it++) {
+			FileType* ft = *it;
+			if (ft->isAssociatedFile(filename)) {
+				fileType = ft;
+				break;
+			}
+		}
 		
 		// load file into buffer
 		ifstream file(filename.c_str());
