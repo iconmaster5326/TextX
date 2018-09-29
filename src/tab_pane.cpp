@@ -130,15 +130,19 @@ namespace textx {
 	
 	void TabPane::onMouse(curses::MouseEvent mevent) {
 		if (content.inWindow(mevent)) {
-			setFocus(currentTab);
 			currentTab->onMouse(content, mevent);
-			refreshTextX();
+			if (currentTab != getFocus()) {
+				setFocus(currentTab);
+				refreshTextX();
+			}
 		}
 		
 		if (statusBar.inWindow(mevent)) {
-			setFocus(currentTab);
 			currentTab->onMouse(statusBar, mevent);
-			refreshTextX();
+			if (currentTab != getFocus()) {
+				setFocus(currentTab);
+				refreshTextX();
+			}
 		}
 	}
 }

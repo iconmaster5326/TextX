@@ -223,7 +223,7 @@ namespace textx {
 		Token token = Token(0, color::pair::system, 0);
 		
 		while (y < h && it != buffer.end()) {
-			if (token.length <= 0) {
+			if (!cursorOnly && token.length <= 0) {
 				token = fileType->getToken(buffer, currentOffset);
 				win.setAttributes(token.attribues);
 				token.color.use(win);
@@ -570,7 +570,51 @@ namespace textx {
 		return (unsaved ? "*" : "") + (hasFilename ? filename : "(untitled)");
 	}
 	
-	void TextEditorApp::onMouse(curses::Window window, curses::MouseEvent mevent) {
-		cursorOffset = offset;
+	void TextEditorApp::onMouse(curses::Window win, curses::MouseEvent mevent) {
+		int x, y; win.getPosition(x, y);
+		x = mevent.x() - x;
+		y = mevent.y() - y;
+		
+		if (win.raw == getPane()->getStatusBar().raw) {
+			// status bar click
+			
+		} else {
+			// content click
+			if (mevent.click(1)) {
+				// left click; move cursor
+				unsigned line, dummy; offsetToLine(offset, line, dummy);
+				cursorOffset = lineToOffset(line+y, x);
+				
+				if (selectingText) {
+					selectingText = false;
+					updateScreen(win, false);
+				} else {
+					updateScreen(win, true);
+				}
+			} else if (mevent.down(1)) {
+				// left button down; start drag
+				unsigned line, dummy; offsetToLine(offset, line, dummy);
+				
+				cursorOffset = lineToOffset(line+y, x);
+				selBeginOffset = cursorOffset;
+				
+				if (selectingText) {
+					updateScreen(win, false);
+				} else {
+					selectingText = true;
+					updateScreen(win, true);
+				}
+			} else if (mevent.up(1)) {
+				// left button up; finish drag
+				if (!selectingText) return;
+				
+				unsigned line, dummy; offsetToLine(offset, line, dummy);
+				
+				cursorOffset = lineToOffset(line+y, x);
+				selEndOffset = cursorOffset;
+				
+				updateScreen(win, false);
+			}
+		}
 	}
 }
