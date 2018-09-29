@@ -127,5 +127,13 @@ namespace textx {
 				refreshTextX();
 			}
 		}
+		
+		if (titleBar.inWindow(mevent) && mevent.click(1)) {
+			// title bar clicked; force focus on app
+			if (app != getFocus()) {
+				setFocus(app);
+				refreshTextX();
+			}
+		}
 	}
 }

@@ -144,5 +144,24 @@ namespace textx {
 				refreshTextX();
 			}
 		}
+		
+		if (titleBar.inWindow(mevent) && mevent.click(1)) {
+			// title bar clicked; change tab
+			int mx = mevent.x() - titleBar.x();
+			int x = 0;
+			for (list<App*>::const_iterator it = apps.begin(); it != apps.end(); it++) {
+				App* app = *it;
+				int xMax = x + app->getTitle().size();
+				if (mx >= x && mx < xMax) {
+					if (app != getFocus()) {
+						currentTab = app;
+						setFocus(app);
+						refreshTextX();
+					}
+					break;
+				}
+				x = xMax + 2;
+			}
+		}
 	}
 }
