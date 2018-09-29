@@ -54,6 +54,7 @@ namespace textx {
 		virtual void refresh();
 		virtual void onKey(curses::KeyCode key);
 		virtual string getTitle();
+		virtual void onMouse(curses::Window window, curses::MouseEvent mevent);
 	};
 	
 	extern set<AppInfo*> allApps;

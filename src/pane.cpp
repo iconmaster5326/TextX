@@ -47,4 +47,5 @@ namespace textx {
 	curses::Window Pane::getStatusBar() {throw exception();}
 	void Pane::clearStatusBar() {throw exception();}
 	void Pane::initWindow(curses::Window window) {throw exception();}
+	void Pane::onMouse(curses::MouseEvent mevent) {throw exception();}
 }

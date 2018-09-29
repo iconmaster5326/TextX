@@ -147,6 +147,14 @@ namespace curses {
 			return KeyCode(wgetch(raw));
 		}
 		
+		inline bool inWindow(MouseEvent mevent) {
+			int x, y, w, h;
+			getPosition(x, y);
+			getSize(w, h);
+			
+			return mevent.x() >= x && mevent.y() >= y && mevent.x() < x+w && mevent.y() < y+h;
+		}
+		
 		// output
 		inline void print(chtype c) {
 			waddch(raw, c);

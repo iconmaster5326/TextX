@@ -73,4 +73,5 @@ namespace textx {
 	void App::refresh() {throw exception();}
 	string App::getTitle() {throw exception();}
 	void App::onKey(curses::KeyCode key) {throw exception();}
+	void App::onMouse(curses::Window window, curses::MouseEvent mevent) {}
 }

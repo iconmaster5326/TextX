@@ -569,4 +569,8 @@ namespace textx {
 	string TextEditorApp::getTitle() {
 		return (unsaved ? "*" : "") + (hasFilename ? filename : "(untitled)");
 	}
+	
+	void TextEditorApp::onMouse(curses::Window window, curses::MouseEvent mevent) {
+		cursorOffset = offset;
+	}
 }

@@ -164,6 +164,15 @@ namespace textx {
 		}
 		
 		switch (key.value) {
+		case KEY_MOUSE: { // mouse; broadcast to all root panes to see if they'd like to handle it
+			curses::MouseEvent mevent = key.asMouseEvent();
+			vector<Pane*>* panes = getRootPanes();
+			for (vector<Pane*>::const_iterator it = panes->begin(); it != panes->end(); it++) {
+				Pane* pane = *it;
+				pane->onMouse(mevent);
+			}
+			break;
+		}
 		case 543: { // alt-left
 			selectLeftPane();
 			break;
@@ -195,5 +204,7 @@ namespace textx {
 		for (vector<Pane*>::const_iterator it = panes->begin(); it != panes->end(); it++) {
 			(*it)->refresh();
 		}
+		
+		if (focus) focus->refresh();
 	}
 }

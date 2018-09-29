@@ -110,4 +110,18 @@ namespace textx {
 		
 		refresh();
 	}
+	
+	void AppPane::onMouse(curses::MouseEvent mevent) {
+		if (content.inWindow(mevent)) {
+			setFocus(app);
+			app->onMouse(content, mevent);
+			refreshTextX();
+		}
+		
+		if (statusBar.inWindow(mevent)) {
+			setFocus(app);
+			app->onMouse(statusBar, mevent);
+			refreshTextX();
+		}
+	}
 }

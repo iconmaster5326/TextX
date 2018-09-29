@@ -36,6 +36,7 @@ namespace textx {
 		void refresh();
 		void onKey(curses::KeyCode key);
 		string getTitle();
+		void onMouse(curses::Window window, curses::MouseEvent mevent);
 		
 		// new methods
 		void drawStatusBar(Pane* pane, curses::Window win);

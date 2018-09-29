@@ -46,6 +46,7 @@ namespace textx {
 		curses::Window getStatusBar();
 		void clearStatusBar();
 		void initWindow(curses::Window window);
+		void onMouse(curses::MouseEvent mevent);
 	};
 }
 
