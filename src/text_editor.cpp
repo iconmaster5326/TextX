@@ -226,7 +226,7 @@ namespace textx {
 			// draw gutter
 			win.setCursor(0, 0);
 			win.setAttributes(A_BOLD);
-			getColorPair(color::yellow, color::black).use(win);
+			getColorPair(color::yellow, color::system).use(win);
 			
 			for (int y = 0; y < h; y++) {
 				win.setCursor(0, y);

@@ -75,7 +75,7 @@ namespace textx {
 					// is keyword?
 					for (int i = 0; i < N_KEYWORDS; i++) {
 						if (buffer.compare(offset, n, KEYWORDS[i]) == 0) {
-							color = getColorPair(color::blue, color::black);
+							color = getColorPair(color::blue, color::system);
 							attrs = A_BOLD;
 							break;
 						}
@@ -92,7 +92,7 @@ namespace textx {
 					}
 					
 					if (!(n == 1 && (gotPeriod || c0 == '-'))) {
-						color = getColorPair(color::magenta, color::black);
+						color = getColorPair(color::magenta, color::system);
 						
 						if (buffer[i] == 'e' || buffer[i] == 'E') {
 							i++; n++;
@@ -112,7 +112,7 @@ namespace textx {
 					
 				} else if (c0 == '/' && buffer.size() > offset+1 && buffer[offset+1] == '/') {
 					// comment
-					color = getColorPair(color::green, color::black);
+					color = getColorPair(color::green, color::system);
 					
 					int i = offset+1;
 					while (i < buffer.size() && (buffer[i] != '\n')) {
@@ -120,7 +120,7 @@ namespace textx {
 					}
 				} else if (c0 == '/' && buffer.size() > offset+1 && buffer[offset+1] == '*') {
 					// multiline comment (TODO properly render ones that come from before offset)
-					color = getColorPair(color::green, color::black);
+					color = getColorPair(color::green, color::system);
 					
 					int i = offset+1;
 					while (i < buffer.size()-1 && !(buffer[i] == '*' && buffer[i+1] == '/')) {
@@ -129,7 +129,7 @@ namespace textx {
 					n += 2;
 				} else if (c0 == '"') {
 					// string constant
-					color = getColorPair(color::cyan, color::black);
+					color = getColorPair(color::cyan, color::system);
 					
 					int i = offset+1;
 					bool escape = false;
@@ -145,7 +145,7 @@ namespace textx {
 					n++;
 				} else if (c0 == '\'') {
 					// char constant
-					color = getColorPair(color::cyan, color::black);
+					color = getColorPair(color::cyan, color::system);
 					
 					int i = offset+1;
 					bool escape = false;
@@ -161,7 +161,7 @@ namespace textx {
 					n++;
 				} else if (c0 == '#') {
 					// preprocessor directive
-					color = getColorPair(color::yellow, color::black);
+					color = getColorPair(color::yellow, color::system);
 					
 					int i = offset+1;
 					bool escape = false;
