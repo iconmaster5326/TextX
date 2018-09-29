@@ -130,20 +130,36 @@ namespace textx {
 	
 	void onMouseInMenu(curses::MouseEvent mevent) {
 		int mx = mevent.x();
-		if (inMenu && mevent.y() != 0) {
-			// event on a menu item
+		int my = mevent.y();
+		
+		if (inMenu && my != 0) {
+			// event when a menu is open
+			if (mevent.click(1)) {
+				if (menuWin.inWindow(mevent)) {
+					// on a menu item
+					int y = my - (menuWin.y()+1);
+					if (y >= 0 && y < currentMenu->items.size()) {
+						currentMenu->items[y]->onSelected();
+					}
+				} else {
+					// outside of our focus
+					exitMenu();
+				}
+			}
 		} else {
 			// event on the menu bar
-			int x = 0;
-			MenuBar& bar = getFocus()->info->menuBar;
-			for (MenuBar::iterator it = bar.begin(); it != bar.end(); it++) {
-				int xMax = x + it->name.size();
-				if (mx >= x && mx < xMax) {
-					exitMenu();
-					selectMenu(&*it);
-					break;
+			if (mevent.click(1)) {
+				int x = 0;
+				MenuBar& bar = getFocus()->info->menuBar;
+				for (MenuBar::iterator it = bar.begin(); it != bar.end(); it++) {
+					int xMax = x + it->name.size();
+					if (mx >= x && mx < xMax) {
+						exitMenu();
+						selectMenu(&*it);
+						break;
+					}
+					x = xMax + 2;
 				}
-				x = xMax + 2;
 			}
 		}
 	}
