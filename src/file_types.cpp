@@ -80,6 +80,99 @@ namespace textx {
 							break;
 						}
 					}
+				} else if (isdigit(c0) || c0 == '.' || c0 == '-') {
+					// number
+					
+					
+					int i = offset+1;
+					bool gotPeriod = c0 == '.';
+					while (i < buffer.size() && (isdigit(buffer[i]) || (!gotPeriod && buffer[i] == '.'))) {
+						if (!gotPeriod && buffer[i] == '.') gotPeriod = true;
+						i++; n++;
+					}
+					
+					if (!(n == 1 && (gotPeriod || c0 == '-'))) {
+						color = getColorPair(color::magenta, color::black);
+						
+						if (buffer[i] == 'e' || buffer[i] == 'E') {
+							i++; n++;
+							if (buffer[i] == '-' || buffer[i] == '+' || isdigit(buffer[i])) {
+								i++; n++;
+								while (i < buffer.size() && isdigit(buffer[i])) {
+									i++; n++;
+								}
+							}
+						}
+						
+						if (buffer[i] == 'f' || buffer[i] == 'l' || buffer[i] == 'F' || buffer[i] == 'L') {
+							i++; n++;
+						}
+					}
+					
+					
+				} else if (c0 == '/' && buffer.size() > offset+1 && buffer[offset+1] == '/') {
+					// comment
+					color = getColorPair(color::green, color::black);
+					
+					int i = offset+1;
+					while (i < buffer.size() && (buffer[i] != '\n')) {
+						i++; n++;
+					}
+				} else if (c0 == '/' && buffer.size() > offset+1 && buffer[offset+1] == '*') {
+					// multiline comment (TODO properly render ones that come from before offset)
+					color = getColorPair(color::green, color::black);
+					
+					int i = offset+1;
+					while (i < buffer.size()-1 && !(buffer[i] == '*' && buffer[i+1] == '/')) {
+						i++; n++;
+					}
+					n += 2;
+				} else if (c0 == '"') {
+					// string constant
+					color = getColorPair(color::cyan, color::black);
+					
+					int i = offset+1;
+					bool escape = false;
+					while (i < buffer.size() && (escape || buffer[i] != '"')) {
+						if (escape) {
+							escape = false;
+						} else if (buffer[i] == '\\') {
+							escape = true;
+						}
+						
+						i++; n++;
+					}
+					n++;
+				} else if (c0 == '\'') {
+					// char constant
+					color = getColorPair(color::cyan, color::black);
+					
+					int i = offset+1;
+					bool escape = false;
+					while (i < buffer.size() && (escape || buffer[i] != '\'')) {
+						if (escape) {
+							escape = false;
+						} else if (buffer[i] == '\\') {
+							escape = true;
+						}
+						
+						i++; n++;
+					}
+					n++;
+				} else if (c0 == '#') {
+					// preprocessor directive
+					color = getColorPair(color::yellow, color::black);
+					
+					int i = offset+1;
+					bool escape = false;
+					while (i < buffer.size() && (escape || buffer[i] != '\n')) {
+						if (escape) {
+							escape = false;
+						} else if (buffer[i] == '\\') {
+							escape = true;
+						}
+						i++; n++;
+					}
 				}
 				
 				return Token(n, color, attrs);
