@@ -540,6 +540,69 @@ namespace textx {
 			
 			break;
 		}
+		case 9: { // ^I: tab
+			if (selectingText) {
+				// indent all lines in selection
+				Buffer::line_t beginLine = buffer.offsetToLine(selBeginOffset);
+				Buffer::line_t endLine = buffer.offsetToLine(selEndOffset);
+				
+				for (int i = beginLine; i <= endLine; i++) {
+					Buffer::offset_t offset = buffer.lineToOffset(i);
+					buffer.insert(offset, '\t');
+				}
+				
+				selBeginOffset++; selEndOffset++;
+				selEndOffset += endLine-beginLine;
+				cursorOffset = selBeginOffset;
+			} else {
+				// insert literal tab
+				buffer.insert(cursorOffset, '\t');
+				cursorOffset++;
+			}
+			
+			markAsUnsaved();
+			break;
+		}
+		case KEY_BTAB: {
+			// indent all lines in selection
+			Buffer::line_t beginLine;
+			Buffer::line_t endLine;
+			
+			if (selectingText) {
+				beginLine = buffer.offsetToLine(selBeginOffset);
+				endLine = buffer.offsetToLine(selEndOffset);
+			} else {
+				beginLine = endLine = buffer.offsetToLine(cursorOffset);
+			}
+			
+			int tabsRemoved = 0;
+			for (int i = beginLine; i <= endLine; i++) {
+				Buffer::offset_t offset = buffer.lineToOffset(i);
+				if (buffer[offset] == '\t') {
+					buffer.erase(offset);
+					tabsRemoved++;
+					
+					if (selectingText) {
+						if (offset >= selBeginOffset) {
+							selBeginOffset--;
+							selEndOffset--;
+						} else if (offset <= selEndOffset) {
+							selEndOffset--;
+						}
+					} else {
+						cursorOffset--;
+					}
+				}
+			}
+			
+			if (selectingText) {
+				if (tabsRemoved != 0) {
+					selBeginOffset += (endLine-beginLine)-1;
+				}
+				cursorOffset = selBeginOffset;
+			}
+			break;
+		}
 		default: {
 			if (selectingText) {
 				buffer.erase(selBeginOffset, selEndOffset-selBeginOffset);
