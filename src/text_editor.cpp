@@ -603,7 +603,7 @@ namespace textx {
 			} else if (mevent.down(1)) {
 				// left button down; start drag
 				cursorOffset = buffer.lineToOffset(screenLine+y, x-xMin);
-				selBeginOffset = cursorOffset;
+				selBeginOffset = selEndOffset = cursorOffset;
 				
 				if (selectingText) {
 					updateScreen(win, false);
@@ -617,6 +617,10 @@ namespace textx {
 				
 				cursorOffset = buffer.lineToOffset(screenLine+y, x-xMin);
 				selEndOffset = cursorOffset;
+				
+				if (selEndOffset < selBeginOffset) {
+					swap(selEndOffset, selBeginOffset);
+				}
 				
 				updateScreen(win, false);
 			}
