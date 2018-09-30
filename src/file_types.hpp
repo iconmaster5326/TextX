@@ -10,6 +10,7 @@
 
 #include "curses.hpp"
 #include "colors.hpp"
+#include "buffer.hpp"
 
 #include <string>
 #include <set>
@@ -39,7 +40,7 @@ namespace textx {
 		virtual ~FileType();
 		
 		virtual bool isAssociatedFile(const string& filename);
-		virtual Token getToken(const string& buffer, int offset);
+		virtual Token getToken(Buffer& buffer, Buffer::offset_t offset);
 	};
 	
 	extern set<FileType*> allFileTypes;

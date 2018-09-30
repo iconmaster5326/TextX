@@ -15,6 +15,7 @@
 #include "app.hpp"
 #include "menu.hpp"
 #include "file_types.hpp"
+#include "buffer.hpp"
 
 namespace textx {
 	using namespace std;
@@ -23,9 +24,10 @@ namespace textx {
 	private:
 		void init();
 	public:
-		string buffer;
+		Buffer buffer;
 		string filename;
-		unsigned offset, cursorOffset, selBeginOffset, selEndOffset;
+		Buffer::line_t screenLine;
+		Buffer::offset_t cursorOffset, selBeginOffset, selEndOffset;
 		bool hasFilename, unsaved, selectingText;
 		FileType* fileType;
 		
@@ -41,9 +43,6 @@ namespace textx {
 		// new methods
 		void drawStatusBar(Pane* pane, curses::Window win);
 		void updateScreen(curses::Window win, bool cursorOnly);
-		void offsetToLine(unsigned offset, unsigned& line, unsigned& col);
-		int lineToOffset(unsigned line, unsigned col);
-		int lineSize(unsigned line);
 		void saveBuffer();
 		void markAsUnsaved();
 	};

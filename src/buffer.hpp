@@ -42,7 +42,15 @@ namespace textx {
 			}
 		}
 		
-		// container methods
+		// container methods TODO add others for STL compatibility
+		typedef const char& const_reference;
+		inline void push_back(char c) {
+			if (c == '\n') {
+				lineToOffsetCache.push_back(text.size());
+			}
+			text += c;
+		}
+		
 		void insert(offset_t offset, char c);
 		template<class Iter> void insert(offset_t offset, Iter begin, Iter end) {
 			deque<offset_t>::iterator lineIt = lower_bound(lineToOffsetCache.begin(), lineToOffsetCache.end(), offset);
