@@ -233,8 +233,10 @@ namespace textx {
 			getColorPair(color::yellow, color::system).use(win);
 			
 			for (int y = 0; y < h; y++) {
-				win.setCursor(0, y);
-				win.printf("%d", line+1);
+				if (line < buffer.lines()) {
+					win.setCursor(0, y);
+					win.printf("%d", line+1);
+				}
 				win.setCursor(xMin-1, y);
 				win.print(ACS_VLINE);
 				
