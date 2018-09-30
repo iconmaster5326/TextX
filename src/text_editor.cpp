@@ -44,6 +44,8 @@ namespace textx {
 			}
 			
 			setFocus(app);
+		} else {
+			setFocus(menuFocus);
 		}
 		
 		refreshTextX();

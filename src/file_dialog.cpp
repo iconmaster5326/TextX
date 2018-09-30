@@ -49,7 +49,7 @@ namespace textx {
 		lineEditor.onKey(key);
 		
 		if (lineEditor.done) {
-			handler(true, lineEditor.buffer, cookie);
+			handler(!lineEditor.buffer.empty(), lineEditor.buffer, cookie);
 		}
 	}
 

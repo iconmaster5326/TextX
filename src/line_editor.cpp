@@ -18,7 +18,7 @@ namespace textx {
 		case '\n':
 			done = true;
 			break;
-		case 128:
+		case 127:
 		case KEY_BACKSPACE: {
 			if (selectingText) {
 				buffer.erase(buffer.begin()+selBeginOffset, buffer.begin()+selEndOffset);
