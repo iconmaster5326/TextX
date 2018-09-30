@@ -632,7 +632,17 @@ namespace textx {
 	}
 	
 	string TextEditorApp::getTitle() {
-		return (unsaved ? "*" : "") + (hasFilename ? filename : "(untitled)");
+		if (hasFilename) {
+			string basename = filename;
+			string::size_type lastSlash = basename.find_last_of("\\/");
+			if (lastSlash != string::npos) {
+				basename.erase(0, lastSlash+1);
+			}
+			
+			return (unsaved ? "*" : "") + basename;
+		} else {
+			return "*(untitled)";
+		}
 	}
 	
 	void TextEditorApp::onMouse(curses::Window win, curses::MouseEvent mevent) {
