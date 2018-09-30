@@ -38,7 +38,7 @@ namespace textx {
 		deque<offset_t>::iterator lineIt = lower_bound(lineToOffsetCache.begin(), lineToOffsetCache.end(), offset);
 		if (text[offset] == '\n') {
 			lineIt = lineToOffsetCache.erase(lineIt);
-			lineIt++;
+			if (lineIt != lineToOffsetCache.end()) lineIt++;
 		}
 		
 		text.erase(text.begin()+offset);
@@ -102,6 +102,7 @@ namespace textx {
 	
 	string::size_type Buffer::lineLengthAtLine(line_t line) const {
 		if (line == 0) return lineLengthAtOffset(0);
+		if (line >= lines()) return 0;
 		return lineLengthAtOffset(lineToOffsetCache[line]+1);
 	}
 }

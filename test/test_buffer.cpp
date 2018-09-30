@@ -322,6 +322,30 @@ string testEraseString() {
 	return "";
 }
 
+string testEraseNewlines() {
+	Buffer::line_iterator it;
+	Buffer b("\n\n\n\n");
+	ASSERT_EQUALS(b.lines(), 5);
+	
+	b.erase(3);
+	ASSERT_EQUALS(b.asString(), "\n\n\n");
+	ASSERT_EQUALS(b.lines(), 4);
+	
+	b.erase(0);
+	ASSERT_EQUALS(b.asString(), "\n\n");
+	ASSERT_EQUALS(b.lines(), 3);
+	
+	b.erase(1);
+	ASSERT_EQUALS(b.asString(), "\n");
+	ASSERT_EQUALS(b.lines(), 2);
+	
+	b.erase(0);
+	ASSERT_EQUALS(b.asString(), "");
+	ASSERT_EQUALS(b.lines(), 1);
+	
+	return "";
+}
+
 /*
  * Test harness
  */
@@ -359,6 +383,7 @@ int main(int argc, char** argv) {
 	TEST(testInsertString);
 	TEST(testEraseChar);
 	TEST(testEraseString);
+	TEST(testEraseNewlines);
 	
 	// print results
 	cout << endl;
