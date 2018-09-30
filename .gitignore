@@ -17,6 +17,7 @@
 *.exe
 /textx
 /key_tester
+/textx_tests
 
 # Core dumps
 *.stacktrace
