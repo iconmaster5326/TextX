@@ -38,28 +38,15 @@ namespace textx {
 		static FileType _none("Plain Text");
 		FileType* none = &_none;
 		
-		// C
-		class FileTypeC : public FileType {
+		// Base class for C, C++, Java, etc.
+		class FileTypeCLike : public FileType {
 		public:
-			FileTypeC() : FileType("C") {}
+			unsigned N_KEYWORDS;
+			const char* const* KEYWORDS;
 			
-			bool isAssociatedFile(const string& filename) {
-				return endsWith(filename, ".c") || endsWith(filename, ".h");
-			}
+			FileTypeCLike(const string& name) : FileType(name) {}
 			
 			Token getToken(const Buffer& buffer, Buffer::offset_t offset) {
-				static const size_t N_KEYWORDS = 32;
-				static const string KEYWORDS[N_KEYWORDS] = {
-						"auto","break","case","char",
-						"const","continue","default","do",
-						"double","else","enum","extern",
-						"float","for","goto","if",
-						"int","long","register","return",
-						"short","signed","sizeof","static",
-						"struct","switch","typedef","union",
-						"unsigned","void","volatile","while"
-				};
-				
 				int n = 1;
 				ColorPair color = color::pair::system;
 				attr_t attrs = 0;
@@ -159,9 +146,43 @@ namespace textx {
 						i++; n++;
 					}
 					n++;
-				} else if (c0 == '#') {
+				}
+				
+				return Token(n, color, attrs);
+			}
+		};
+		
+		// C
+		class FileTypeC : public FileTypeCLike {
+		public:
+			FileTypeC() : FileTypeCLike("C") {
+				static const int N_KEYWORDS_ = 32;
+				static const char* KEYWORDS_[N_KEYWORDS_] = {
+						"auto","break","case","char",
+						"const","continue","default","do",
+						"double","else","enum","extern",
+						"float","for","goto","if",
+						"int","long","register","return",
+						"short","signed","sizeof","static",
+						"struct","switch","typedef","union",
+						"unsigned","void","volatile","while"
+				};
+				
+				N_KEYWORDS = N_KEYWORDS_;
+				KEYWORDS = KEYWORDS_;
+			}
+			FileTypeC(const string& name) : FileTypeCLike(name) {}
+			
+			bool isAssociatedFile(const string& filename) {
+				return endsWith(filename, ".c") || endsWith(filename, ".h");
+			}
+			
+			Token getToken(const Buffer& buffer, Buffer::offset_t offset) {
+				char c0 = buffer[offset];
+				
+				if (c0 == '#') {
 					// preprocessor directive
-					color = getColorPair(color::yellow, color::system);
+					int n = 1;
 					
 					int i = offset+1;
 					bool escape = false;
@@ -173,14 +194,97 @@ namespace textx {
 						}
 						i++; n++;
 					}
+					
+					return Token(n, getColorPair(color::yellow, color::system), 0);
 				}
 				
-				return Token(n, color, attrs);
+				return FileTypeCLike::getToken(buffer, offset);
 			}
 		};
 		
 		static FileTypeC _c;
 		FileType* c = &_c;
+		
+		// C++
+		class FileTypeCXX : public FileTypeC {
+		public:
+			FileTypeCXX() : FileTypeC("C++") {
+				static const int N_KEYWORDS_ = 96;
+				static const char* KEYWORDS_[N_KEYWORDS_] = {
+						"alignas","alignof","and","and_eq","asm","atomic_cancel","atomic_commit",
+						"atomic_noexcept","auto","bitand","bitor","bool","break","case","catch",
+						"char","char16_t","char32_t","class","compl","concept","const","constexpr",
+						"const_cast","continue","co_await","co_return","co_yield","decltype",
+						"default","delete","do","double","dynamic_cast","else","enum","explicit",
+						"export","extern","false","float","for","friend","goto","if","import",
+						"inline","int","long","module","mutable","namespace","new","noexcept",
+						"not","not_eq","nullptr","operator","or","or_eq","private","protected",
+						"public","reflexpr","register","reinterpret_cast","requires","return",
+						"short","signed","sizeof","static","static_assert","static_cast","struct",
+						"switch","synchronized","template","this","thread_local","throw","true",
+						"try","typedef","typeid","typename","union","unsigned","using","virtual",
+						"void","volatile","wchar_t","while","xor","xor_eq"
+				};
+				
+				N_KEYWORDS = N_KEYWORDS_;
+				KEYWORDS = KEYWORDS_;
+			}
+			
+			bool isAssociatedFile(const string& filename) {
+				return endsWith(filename, ".cpp") || endsWith(filename, ".hpp") || endsWith(filename, ".cxx") || endsWith(filename, ".hxx");
+			}
+		};
+		
+		static FileTypeCXX _cxx;
+		FileType* cxx = &_cxx;
+		
+		// Java
+		class FileTypeJava : public FileTypeCLike {
+		public:
+			FileTypeJava() : FileTypeCLike("Java") {
+				static const int N_KEYWORDS_ = 50;
+				static const char* KEYWORDS_[N_KEYWORDS_] = {
+						"abstract","continue","for","new","switch",
+						"assert","default","goto","package","synchronized",
+						"boolean","do","if","private","this",
+						"break","double","implements","protected","throw",
+						"byte","else","import","public","throws",
+						"case","enum","instanceof","return","transient",
+						"catch","extends","int","short","try",
+						"char","final","interface","static","void",
+						"class","finally","long","strictfp","volatile",
+						"const","float","native","super","while"
+				};
+				
+				N_KEYWORDS = N_KEYWORDS_;
+				KEYWORDS = KEYWORDS_;
+			}
+			
+			bool isAssociatedFile(const string& filename) {
+				return endsWith(filename, ".java");
+			}
+			
+			Token getToken(const Buffer& buffer, Buffer::offset_t offset) {
+				char c0 = buffer[offset];
+				
+				if (c0 == '@') {
+					// annotation
+					int n = 1;
+					
+					int i = offset+1;
+					while (i < buffer.size() && (isalnum(buffer[i]) || i == '_')) {
+						i++; n++;
+					}
+					
+					return Token(n, getColorPair(color::yellow, color::system), 0);
+				}
+				
+				return FileTypeCLike::getToken(buffer, offset);
+			}
+		};
+		
+		static FileTypeJava _java;
+		FileType* java = &_java;
 	}
 	
 	void initAllFileTypes() {
@@ -188,5 +292,7 @@ namespace textx {
 		
 		allFileTypes.insert(file_type::none);
 		allFileTypes.insert(file_type::c);
+		allFileTypes.insert(file_type::cxx);
+		allFileTypes.insert(file_type::java);
 	}
 }

@@ -49,6 +49,8 @@ namespace textx {
 	namespace file_type {
 		extern FileType* none;
 		extern FileType* c;
+		extern FileType* cxx;
+		extern FileType* java;
 	}
 }
 
