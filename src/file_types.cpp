@@ -242,7 +242,7 @@ namespace textx {
 		class FileTypeJava : public FileTypeCLike {
 		public:
 			FileTypeJava() : FileTypeCLike("Java") {
-				static const int N_KEYWORDS_ = 50;
+				static const int N_KEYWORDS_ = 53;
 				static const char* KEYWORDS_[N_KEYWORDS_] = {
 						"abstract","continue","for","new","switch",
 						"assert","default","goto","package","synchronized",
@@ -253,7 +253,8 @@ namespace textx {
 						"catch","extends","int","short","try",
 						"char","final","interface","static","void",
 						"class","finally","long","strictfp","volatile",
-						"const","float","native","super","while"
+						"const","float","native","super","while",
+						"true","false","null"
 				};
 				
 				N_KEYWORDS = N_KEYWORDS_;
