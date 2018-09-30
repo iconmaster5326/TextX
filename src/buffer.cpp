@@ -21,8 +21,7 @@ namespace textx {
 	}
 
 	void Buffer::insert(offset_t offset, char c) {
-		lineToOffsetCache.push_back(-1);
-		deque<offset_t>::iterator lineIt = upper_bound(lineToOffsetCache.begin(), lineToOffsetCache.end(), offset);
+		deque<offset_t>::iterator lineIt = lower_bound(lineToOffsetCache.begin(), lineToOffsetCache.end(), offset);
 		
 		text.insert(offset, 1, c);
 		if (c == '\n') {
@@ -39,6 +38,7 @@ namespace textx {
 		deque<offset_t>::iterator lineIt = lower_bound(lineToOffsetCache.begin(), lineToOffsetCache.end(), offset);
 		if (text[offset] == '\n') {
 			lineIt = lineToOffsetCache.erase(lineIt);
+			lineIt++;
 		}
 		
 		text.erase(text.begin()+offset);
@@ -56,7 +56,7 @@ namespace textx {
 				lineIt = lineToOffsetCache.erase(lineIt);
 			}
 			
-			erase(offset);
+			text.erase(offset, 1);
 		}
 		
 		for (deque<offset_t>::iterator restLines = lineIt; restLines != lineToOffsetCache.end(); restLines++) {

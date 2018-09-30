@@ -165,6 +165,163 @@ string testIterCtor() {
 	return "";
 }
 
+string testInsertChar() {
+	Buffer b;
+	ASSERT_EQUALS(b.lines(), 1);
+	
+	b.insert(0, 'a'); ASSERT_EQUALS(b.lines(), 1);
+	b.insert(0, '\n'); ASSERT_EQUALS(b.lines(), 2);
+	b.insert(0, 'b'); ASSERT_EQUALS(b.lines(), 2);
+	b.insert(0, 'c'); ASSERT_EQUALS(b.lines(), 2);
+	b.insert(0, '\n'); ASSERT_EQUALS(b.lines(), 3);
+	b.insert(0, 'd'); ASSERT_EQUALS(b.lines(), 3);
+	
+	ASSERT_EQUALS(b.asString(), "d\ncb\na");
+	ASSERT_EQUALS(b.lines(), 3);
+	
+	Buffer::line_iterator it = b.beginLines();
+	ASSERT_EQUALS(*it, -1);
+	it++;
+	ASSERT_EQUALS(*it, 1);
+	it++;
+	ASSERT_EQUALS(*it, 4);
+	it++;
+	ASSERT_EQUALS(it, b.endLines());
+	
+	return "";
+}
+
+string testInsertString() {
+	Buffer b("Hellorld\n!");
+	ASSERT_EQUALS(b.lines(), 2);
+	
+	b.insert(5, "o\nooo\nW");
+	
+	ASSERT_EQUALS(b.asString(), "Hello\nooo\nWorld\n!");
+	ASSERT_EQUALS(b.lines(), 4);
+	
+	Buffer::line_iterator it = b.beginLines();
+	ASSERT_EQUALS(*it, -1);
+	it++;
+	ASSERT_EQUALS(*it, 5);
+	it++;
+	ASSERT_EQUALS(*it, 9);
+	it++;
+	ASSERT_EQUALS(*it, 15);
+	it++;
+	ASSERT_EQUALS(it, b.endLines());
+	
+	return "";
+}
+
+string testEraseChar() {
+	Buffer::line_iterator it;
+	Buffer b("01234\n6789\nb");
+	ASSERT_EQUALS(b.lines(), 3);
+	
+	it = b.beginLines();
+	ASSERT_EQUALS(*it, -1);
+	it++;
+	ASSERT_EQUALS(*it, 5);
+	it++;
+	ASSERT_EQUALS(*it, 10);
+	it++;
+	ASSERT_EQUALS(it, b.endLines());
+	
+	b.erase(3);
+	ASSERT_EQUALS(b.asString(), "0124\n6789\nb");
+	ASSERT_EQUALS(b.lines(), 3);
+	
+	it = b.beginLines();
+	ASSERT_EQUALS(*it, -1);
+	it++;
+	ASSERT_EQUALS(*it, 4);
+	it++;
+	ASSERT_EQUALS(*it, 9);
+	it++;
+	ASSERT_EQUALS(it, b.endLines());
+	
+	b.erase(8-1);
+	ASSERT_EQUALS(b.asString(), "0124\n679\nb");
+	ASSERT_EQUALS(b.lines(), 3);
+	
+	it = b.beginLines();
+	ASSERT_EQUALS(*it, -1);
+	it++;
+	ASSERT_EQUALS(*it, 4);
+	it++;
+	ASSERT_EQUALS(*it, 8);
+	it++;
+	ASSERT_EQUALS(it, b.endLines());
+	
+	b.erase(5-1);
+	ASSERT_EQUALS(b.asString(), "0124679\nb");
+	ASSERT_EQUALS(b.lines(), 2);
+	
+	it = b.beginLines();
+	ASSERT_EQUALS(*it, -1);
+	it++;
+	ASSERT_EQUALS(*it, 8);
+	it++;
+	ASSERT_EQUALS(it, b.endLines());
+	
+	return "";
+}
+
+string testEraseString() {
+	Buffer::line_iterator it;
+	Buffer b("01234\n6789\nb");
+	ASSERT_EQUALS(b.lines(), 3);
+	
+	it = b.beginLines();
+	ASSERT_EQUALS(*it, -1);
+	it++;
+	ASSERT_EQUALS(*it, 5);
+	it++;
+	ASSERT_EQUALS(*it, 10);
+	it++;
+	ASSERT_EQUALS(it, b.endLines());
+	
+	b.erase(1, 3);
+	ASSERT_EQUALS(b.asString(), "04\n6789\nb");
+	ASSERT_EQUALS(b.lines(), 3);
+	
+	it = b.beginLines();
+	ASSERT_EQUALS(*it, -1);
+	it++;
+	ASSERT_EQUALS(*it, 2);
+	it++;
+	ASSERT_EQUALS(*it, 7);
+	it++;
+	ASSERT_EQUALS(it, b.endLines());
+	
+	b.erase(3, 2);
+	ASSERT_EQUALS(b.asString(), "04\n89\nb");
+	ASSERT_EQUALS(b.lines(), 3);
+	
+	it = b.beginLines();
+	ASSERT_EQUALS(*it, -1);
+	it++;
+	ASSERT_EQUALS(*it, 2);
+	it++;
+	ASSERT_EQUALS(*it, 5);
+	it++;
+	ASSERT_EQUALS(it, b.endLines());
+	
+	b.erase(1, 3);
+	ASSERT_EQUALS(b.asString(), "09\nb");
+	ASSERT_EQUALS(b.lines(), 2);
+	
+	it = b.beginLines();
+	ASSERT_EQUALS(*it, -1);
+	it++;
+	ASSERT_EQUALS(*it, 2);
+	it++;
+	ASSERT_EQUALS(it, b.endLines());
+	
+	return "";
+}
+
 /*
  * Test harness
  */
@@ -198,6 +355,10 @@ int main(int argc, char** argv) {
 	TEST(testStringCtorManyLines);
 	TEST(testStringCtorEmptyLines);
 	TEST(testIterCtor);
+	TEST(testInsertChar);
+	TEST(testInsertString);
+	TEST(testEraseChar);
+	TEST(testEraseString);
 	
 	// print results
 	cout << endl;

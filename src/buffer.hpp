@@ -45,16 +45,16 @@ namespace textx {
 		// container methods
 		void insert(offset_t offset, char c);
 		template<class Iter> void insert(offset_t offset, Iter begin, Iter end) {
-			deque<offset_t>::iterator lineIt = upper_bound(lineToOffsetCache.begin(), lineToOffsetCache.end(), offset);
+			deque<offset_t>::iterator lineIt = lower_bound(lineToOffsetCache.begin(), lineToOffsetCache.end(), offset);
 			unsigned charsCopied = 0;
 			
 			for (Iter it = begin; it != end; it++) {
 				char c = *it;
-				text.insert(offset, 1, c);
+				text.insert(offset-1, 1, c);
 				offset++;
 				
 				if (c == '\n') {
-					lineToOffsetCache.insert(lineIt, offset);
+					lineToOffsetCache.insert(lineIt, offset-2);
 					lineIt++;
 				}
 				
@@ -102,10 +102,11 @@ namespace textx {
 			return lineToOffset(line, 0);
 		}
 		
-		deque<offset_t>::const_iterator beginLines() {
+		typedef deque<offset_t>::const_iterator line_iterator;
+		line_iterator beginLines() {
 			return lineToOffsetCache.begin();
 		}
-		deque<offset_t>::const_iterator endLines() {
+		line_iterator endLines() {
 			return lineToOffsetCache.end();
 		}
 		
