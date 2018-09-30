@@ -19,7 +19,7 @@ namespace textx {
 		return false;
 	}
 	
-	Token FileType::getToken(Buffer& buffer, Buffer::offset_t offset) {
+	Token FileType::getToken(const Buffer& buffer, Buffer::offset_t offset) {
 		return Token(0, color::pair::system, 0);
 	}
 	
@@ -47,7 +47,7 @@ namespace textx {
 				return endsWith(filename, ".c") || endsWith(filename, ".h");
 			}
 			
-			Token getToken(Buffer& buffer, Buffer::offset_t offset) {
+			Token getToken(const Buffer& buffer, Buffer::offset_t offset) {
 				static const size_t N_KEYWORDS = 32;
 				static const string KEYWORDS[N_KEYWORDS] = {
 						"auto","break","case","char",

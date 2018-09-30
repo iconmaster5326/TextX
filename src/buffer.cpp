@@ -64,14 +64,14 @@ namespace textx {
 		}
 	}
 	
-	void Buffer::offsetToLine(offset_t offset, line_t& line, col_t& col) {
+	void Buffer::offsetToLine(offset_t offset, line_t& line, col_t& col) const {
 		if (offset <= 0) {
 			line = 0;
 			col = 0;
 			return;
 		}
 		
-		deque<offset_t>::iterator it = lower_bound(lineToOffsetCache.begin(), lineToOffsetCache.end(), offset);
+		deque<offset_t>::const_iterator it = lower_bound(lineToOffsetCache.begin(), lineToOffsetCache.end(), offset);
 		
 		it--;
 		unsigned lineOff = (*it)+1;
@@ -82,7 +82,7 @@ namespace textx {
 		if (col >= lineLen) col = lineLen;
 	}
 
-	Buffer::offset_t Buffer::lineToOffset(line_t line, col_t col) {
+	Buffer::offset_t Buffer::lineToOffset(line_t line, col_t col) const {
 		if (line >= lines()) {
 			return size();
 		}
@@ -94,13 +94,13 @@ namespace textx {
 		return offset+col;
 	}
 	
-	string::size_type Buffer::lineLengthAtOffset(offset_t offset) {
+	string::size_type Buffer::lineLengthAtOffset(offset_t offset) const {
 		string::size_type pos = text.find('\n', offset);
 		if (pos == string::npos) return text.size() - offset;
 		return pos - offset;
 	}
 	
-	string::size_type Buffer::lineLengthAtLine(line_t line) {
+	string::size_type Buffer::lineLengthAtLine(line_t line) const {
 		if (line == 0) return lineLengthAtOffset(0);
 		return lineLengthAtOffset(lineToOffsetCache[line]+1);
 	}

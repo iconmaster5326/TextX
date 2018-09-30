@@ -80,49 +80,49 @@ namespace textx {
 		void erase(offset_t offset);
 		void erase(offset_t offset, string::size_type n);
 		
-		inline string::size_type size() {
+		inline string::size_type size() const {
 			return text.size();
 		}
-		inline bool empty() {
+		inline bool empty() const {
 			return text.empty();
 		}
-		inline char operator[](string::size_type n) {
+		inline char operator[](string::size_type n) const {
 			return text[n];
 		}
 		
 		// specialized methods
-		void offsetToLine(offset_t offset, line_t& line, col_t& col);
-		offset_t lineToOffset(line_t line, col_t col);
-		string::size_type lineLengthAtOffset(offset_t offset);
-		string::size_type lineLengthAtLine(line_t line);
+		void offsetToLine(offset_t offset, line_t& line, col_t& col) const;
+		offset_t lineToOffset(line_t line, col_t col) const;
+		string::size_type lineLengthAtOffset(offset_t offset) const;
+		string::size_type lineLengthAtLine(line_t line) const;
 		
-		inline line_t offsetToLine(offset_t offset) {
+		inline line_t offsetToLine(offset_t offset) const {
 			line_t line; col_t col;
 			offsetToLine(offset, line, col);
 			return line;
 		}
-		inline col_t offsetToCol(offset_t offset) {
+		inline col_t offsetToCol(offset_t offset) const {
 			line_t line; col_t col;
 			offsetToLine(offset, line, col);
 			return col;
 		}
-		inline offset_t lineToOffset(line_t line) {
+		inline offset_t lineToOffset(line_t line) const {
 			return lineToOffset(line, 0);
 		}
 		
 		typedef deque<offset_t>::const_iterator line_iterator;
-		line_iterator beginLines() {
+		line_iterator beginLines() const {
 			return lineToOffsetCache.begin();
 		}
-		line_iterator endLines() {
+		line_iterator endLines() const {
 			return lineToOffsetCache.end();
 		}
 		
-		inline deque<offset_t>::size_type lines() {
+		inline deque<offset_t>::size_type lines() const {
 			return lineToOffsetCache.size();
 		}
 		
-		inline const string& asString() {
+		inline const string& asString() const {
 			return text;
 		}
 	};

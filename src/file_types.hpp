@@ -40,7 +40,7 @@ namespace textx {
 		virtual ~FileType();
 		
 		virtual bool isAssociatedFile(const string& filename);
-		virtual Token getToken(Buffer& buffer, Buffer::offset_t offset);
+		virtual Token getToken(const Buffer& buffer, Buffer::offset_t offset);
 	};
 	
 	extern set<FileType*> allFileTypes;
