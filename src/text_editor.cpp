@@ -632,10 +632,23 @@ namespace textx {
 			
 		} else {
 			// content click
+			unsigned firstLine, dummy; offsetToLine(offset, firstLine, dummy);
+			int w, h; win.getSize(w, h);
+			
+			// find size of the gutter
+			int xMin = 1;
+			
+			int maxLineNo = firstLine+h;
+			do {
+				maxLineNo /= 10;
+				xMin++; 
+			} while (maxLineNo);
+			
+			// do mouse event
 			if (mevent.click(1)) {
 				// left click; move cursor
-				unsigned line, dummy; offsetToLine(offset, line, dummy);
-				cursorOffset = lineToOffset(line+y, x);
+				unsigned line; offsetToLine(offset, line, dummy);
+				cursorOffset = lineToOffset(line+y, x-xMin);
 				
 				if (selectingText) {
 					selectingText = false;
@@ -647,7 +660,7 @@ namespace textx {
 				// left button down; start drag
 				unsigned line, dummy; offsetToLine(offset, line, dummy);
 				
-				cursorOffset = lineToOffset(line+y, x);
+				cursorOffset = lineToOffset(line+y, x-xMin);
 				selBeginOffset = cursorOffset;
 				
 				if (selectingText) {
@@ -662,7 +675,7 @@ namespace textx {
 				
 				unsigned line, dummy; offsetToLine(offset, line, dummy);
 				
-				cursorOffset = lineToOffset(line+y, x);
+				cursorOffset = lineToOffset(line+y, x-xMin);
 				selEndOffset = cursorOffset;
 				
 				updateScreen(win, false);
