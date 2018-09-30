@@ -9,6 +9,7 @@ CXX_FILES := $(wildcard src/*.cpp)
 HXX_FILES := $(wildcard src/*.hpp)
 O_FILES := $(patsubst src/%.cpp,build/%.o,$(CXX_FILES))
 D_FILES := $(patsubst src/%.cpp,build/%.d,$(CXX_FILES))
+EXE_FILES := textx key_tester textx_tests
 
 CXXFLAGS := -g -std=c++03 -Isrc
 LINKFLAGS := -lncurses
@@ -20,6 +21,9 @@ textx$(EXE_SUFFIX): $(O_FILES)
 	
 key_tester$(EXE_SUFFIX): src/key_tester/key_tester.cpp src/curses.hpp
 	$(CXX) $(CXXFLAGS) -o key_tester src/key_tester/key_tester.cpp $(LINKFLAGS)
+
+textx_tests$(EXE_SUFFIX): test/test_buffer.cpp build/buffer.o src/buffer.hpp
+	$(CXX) $(CXXFLAGS) -o textx_tests test/test_buffer.cpp build/buffer.o $(LINKFLAGS)
 
 # to do it statically:
 #	$(CXX) -g -static -o textx $(O_FILES) -lncurses $(LINUX_LINKFLAGS)
@@ -38,12 +42,12 @@ build:
 	mkdir build
 
 # phony rules
-all: $(EXE_NAME) key_tester$(EXE_SUFFIX)
+all: $(patsubst %,%$(EXE_SUFFIX),$(EXE_FILES))
 
 clean:
 	rm -rf build
 
 spotless: clean
-	rm -rf textx textx.exe key_tester key_tester.exe
+	rm -rf $(EXE_FILES) $(patsubst %,%.exe,$(EXE_FILES))
 
 .PHONY: clean spotless all

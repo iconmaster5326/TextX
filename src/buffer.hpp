@@ -17,23 +17,27 @@ namespace textx {
 	
 	class Buffer {
 	public:
-		typedef unsigned offset_t;
-		typedef unsigned line_t;
-		typedef unsigned col_t;
-		typedef unsigned size_type;
+		typedef int offset_t;
+		typedef int line_t;
+		typedef int col_t;
 	private:
 		string text;
 		deque<offset_t> lineToOffsetCache;
 	public:
 		// constructors
-		inline Buffer() {}
+		inline Buffer() {
+			lineToOffsetCache.push_back(-1);
+		}
+		
 		Buffer(string text);
 		template<class Iter> Buffer(Iter begin, Iter end) {
+			lineToOffsetCache.push_back(-1);
+			
 			for (Iter it = begin; it != end; it++) {
 				char c = *it;
 				text += c;
 				if (c == '\n') {
-					lineToOffsetCache.push_back(text.size());
+					lineToOffsetCache.push_back(text.size()-1);
 				}
 			}
 		}
@@ -66,26 +70,23 @@ namespace textx {
 		}
 		
 		void erase(offset_t offset);
-		void erase(offset_t offset, size_type n);
+		void erase(offset_t offset, string::size_type n);
 		
-		inline size_type size() {
+		inline string::size_type size() {
 			return text.size();
 		}
 		inline bool empty() {
 			return text.empty();
 		}
-		inline char operator[](size_type n) {
+		inline char operator[](string::size_type n) {
 			return text[n];
 		}
 		
 		// specialized methods
 		void offsetToLine(offset_t offset, line_t& line, col_t& col);
 		offset_t lineToOffset(line_t line, col_t col);
-		size_type lineLength(offset_t offset);
-		
-		inline size_type lineLength(line_t line, col_t col) {
-			return lineLength(lineToOffset(line, col));
-		}
+		string::size_type lineLengthAtOffset(offset_t offset);
+		string::size_type lineLengthAtLine(line_t line);
 		
 		inline line_t offsetToLine(offset_t offset) {
 			line_t line; col_t col;
