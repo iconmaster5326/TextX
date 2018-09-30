@@ -44,6 +44,7 @@ namespace textx {
 		
 		// container methods TODO add others for STL compatibility
 		typedef const char& const_reference;
+		typedef char value_type;
 		inline void push_back(char c) {
 			if (c == '\n') {
 				lineToOffsetCache.push_back(text.size());
