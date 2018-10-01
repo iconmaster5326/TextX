@@ -27,6 +27,8 @@ make
 
 An executable called `textx` (or `textx.exe`) should now be available in the current directory.
 
+If you want to use an alternate C++ compiler, specify `CXX` to `make`. For Mac, `CXX=clang++` should do. For MinGW, `CXX=x86_64-w64-mingw32-g++` should do.
+
 ## Usage
 
 * Press `^Q` to quit at any time.
