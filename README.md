@@ -1,3 +1,5 @@
+![TextX editing its own source code.](2c376cd645[1].png)
+
 # TextX
 
 TextX is a simple terminal text editor written in C++, designed to make use of features and controls commonly seen in modern GUI text editors, while making full use of its text-based environment.
