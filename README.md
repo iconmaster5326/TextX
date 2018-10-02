@@ -1,3 +1,5 @@
+![TextX editing its own source code.](2c376cd645[1].png)
+
 # TextX
 
 TextX is a simple terminal text editor written in C++, designed to make use of features and controls commonly seen in modern GUI text editors, while making full use of its text-based environment.
@@ -26,6 +28,8 @@ make
 ```
 
 An executable called `textx` (or `textx.exe`) should now be available in the current directory.
+
+If you want to use an alternate C++ compiler, specify `CXX` to `make`. For Mac, `CXX=clang++` should do. For MinGW, `CXX=x86_64-w64-mingw32-g++` should do.
 
 ## Usage
 

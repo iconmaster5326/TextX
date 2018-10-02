@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <exception>
+#include <cstdlib>
 
 namespace textx {
 	using namespace std;
