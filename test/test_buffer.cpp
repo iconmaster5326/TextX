@@ -195,7 +195,7 @@ string testInsertString() {
 	Buffer b("Hellorld\n!");
 	ASSERT_EQUALS(b.lines(), 2);
 	
-	b.insert(5, "o\nooo\nW");
+	b.insert(4, "o\nooo\nW");
 	
 	ASSERT_EQUALS(b.asString(), "Hello\nooo\nWorld\n!");
 	ASSERT_EQUALS(b.lines(), 4);
@@ -346,6 +346,17 @@ string testEraseNewlines() {
 	return "";
 }
 
+string testInsetOnEmptyLine() {
+	Buffer b("\n\n\n");
+	ASSERT_EQUALS(b.lines(), 4);
+	
+	b.insert(2, "abc");
+	ASSERT_EQUALS(b.asString(), "\n\nabc\n");
+	ASSERT_EQUALS(b.lines(), 4);
+	
+	return "";
+}
+
 /*
  * Test harness
  */
@@ -384,6 +395,7 @@ int main(int argc, char** argv) {
 	TEST(testEraseChar);
 	TEST(testEraseString);
 	TEST(testEraseNewlines);
+	TEST(testInsetOnEmptyLine);
 	
 	// print results
 	cout << endl;

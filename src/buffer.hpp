@@ -59,11 +59,11 @@ namespace textx {
 			
 			for (Iter it = begin; it != end; it++) {
 				char c = *it;
-				text.insert(offset-1, 1, c);
+				text.insert(offset, 1, c);
 				offset++;
 				
 				if (c == '\n') {
-					lineToOffsetCache.insert(lineIt, offset-2);
+					lineToOffsetCache.insert(lineIt, offset-1);
 					lineIt++;
 				}
 				

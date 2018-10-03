@@ -537,7 +537,7 @@ namespace textx {
 			}
 			
 			string clip = getClipboard();
-			buffer.insert(cursorOffset+1, clip.begin(), clip.end());
+			buffer.insert(cursorOffset, clip.begin(), clip.end());
 			cursorOffset += clip.size();
 			
 			break;
