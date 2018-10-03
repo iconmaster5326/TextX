@@ -19,6 +19,7 @@
 #include <iterator>
 #include <iostream>
 #include <fstream>
+#include <limits>
 
 namespace textx {
 	using namespace std;
@@ -605,6 +606,41 @@ namespace textx {
 			}
 			break;
 		}
+		case KEY_HOME: {
+			int line = buffer.offsetToLine(cursorOffset);
+			cursorOffset = buffer.lineToOffset(line);
+			refreshCursorOnly = true;
+		} break;
+		case KEY_END: {
+			int line = buffer.offsetToLine(cursorOffset);
+			cursorOffset = buffer.lineToOffset(line, numeric_limits<Buffer::col_t>::max());
+			refreshCursorOnly = true;
+		} break;
+		case KEY_PPAGE: { // page up
+			int line, col; buffer.offsetToLine(cursorOffset, line, col);
+			line -= win.height();
+			if (line < 0) {
+				line = 0;
+				col = 0;
+			}
+			cursorOffset = buffer.lineToOffset(line, col);
+			if (line < screenLine) {
+				screenLine = line;
+			} else {
+				refreshCursorOnly = true;
+			}
+		} break;
+		case KEY_NPAGE: { // page down
+			int line, col; buffer.offsetToLine(cursorOffset, line, col);
+			line += win.height();
+			cursorOffset = buffer.lineToOffset(line, col);
+			line = buffer.offsetToLine(cursorOffset);
+			if (line >= screenLine+win.height()) {
+				screenLine = line-win.height()+1;
+			} else {
+				refreshCursorOnly = true;
+			}
+		} break;
 		case '\n':
 		case KEY_ENTER: {
 			if (selectingText) {

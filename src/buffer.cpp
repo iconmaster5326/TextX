@@ -83,6 +83,10 @@ namespace textx {
 	}
 
 	Buffer::offset_t Buffer::lineToOffset(line_t line, col_t col) const {
+		if (line < 0) {
+			return 0;
+		}
+		
 		if (line >= lines()) {
 			return size();
 		}
