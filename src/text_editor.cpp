@@ -605,6 +605,33 @@ namespace textx {
 			}
 			break;
 		}
+		case '\n':
+		case KEY_ENTER: {
+			if (selectingText) {
+				buffer.erase(selBeginOffset, selEndOffset-selBeginOffset);
+				cursorOffset = selBeginOffset;
+				selectingText = false;
+			}
+			
+			buffer.insert(cursorOffset, '\n');
+			cursorOffset++;
+			
+			// scroll screen if needed
+			int line = buffer.offsetToLine(cursorOffset);
+			if (line-screenLine >= win.height()-1) {
+				screenLine++;
+			}
+			
+			// auto-indent
+			int lastLine = buffer.lineToOffset(line-1);
+			while (lastLine > 0 && lastLine < buffer.size() && buffer[lastLine] != '\n' && isspace(buffer[lastLine])) {
+				buffer.insert(cursorOffset, buffer[lastLine]);
+				cursorOffset++;
+				lastLine++;
+			}
+			
+			markAsUnsaved();
+		} break;
 		default: {
 			if (selectingText) {
 				buffer.erase(selBeginOffset, selEndOffset-selBeginOffset);
@@ -614,14 +641,6 @@ namespace textx {
 			
 			buffer.insert(cursorOffset, key.value);
 			cursorOffset++;
-			
-			if (key.value == '\n') {
-				int line, dummy; buffer.offsetToLine(cursorOffset, line, dummy);
-				
-				if (line-screenLine >= win.height()-1) {
-					screenLine++;
-				}
-			}
 			
 			markAsUnsaved();
 		}
