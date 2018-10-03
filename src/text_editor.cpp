@@ -515,7 +515,7 @@ namespace textx {
 		}
 		case 24: { // ^X: cut
 			if (!selectingText) return;
-			setClipboard(string(selBeginOffset, selEndOffset-selBeginOffset));
+			setClipboard(buffer.asString().substr(selBeginOffset, selEndOffset-selBeginOffset));
 			
 			buffer.erase(selBeginOffset, selEndOffset-selBeginOffset);
 			cursorOffset = selBeginOffset;
@@ -525,7 +525,7 @@ namespace textx {
 		}
 		case 3: { // ^C: copy
 			if (!selectingText) return;
-			setClipboard(string(selBeginOffset, selEndOffset-selBeginOffset));
+			setClipboard(buffer.asString().substr(selBeginOffset, selEndOffset-selBeginOffset));
 			
 			break;
 		}
@@ -537,7 +537,7 @@ namespace textx {
 			}
 			
 			string clip = getClipboard();
-			buffer.insert(cursorOffset, clip.begin(), clip.end());
+			buffer.insert(cursorOffset+1, clip.begin(), clip.end());
 			cursorOffset += clip.size();
 			
 			break;
