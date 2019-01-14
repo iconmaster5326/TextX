@@ -89,19 +89,44 @@ namespace textx {
 		}
 	};
 	
+	static string eolModeToString(EolMode mode) {
+		switch (mode) {
+			case EOL_MODE_WINDOWS: return "Windows (\\r\\n)"; break;
+			case EOL_MODE_UNIX: return "Unix (\\n)"; break;
+			default: throw exception();
+		}
+	}
+	
+	class EolModeMenuItem : public ButtonMenuItem {
+	public:
+		EolMode mode;
+		EolModeMenuItem(EolMode mode) : ButtonMenuItem(eolModeToString(mode), NULL), mode(mode) {}
+		void onSelected() {
+			exitMenu();
+			((TextEditorApp*)getFocus())->eolMode = mode;
+			getFocus()->refresh();
+		}
+	};
+	
 	class TextEditorAppInfo : public AppInfo {
 	public:
 		TextEditorAppInfo() : AppInfo("Text Editor") {
 			// add hotkeys
 			
-			// build menu
+			// build submenus
+			//// file types
 			initAllFileTypes();
 			vector<MenuItem*> fileTypes;
 			for (set<FileType*>::const_iterator it = allFileTypes.begin(); it != allFileTypes.end(); it++) {
 				fileTypes.push_back(new FileTypeMenuItem(*it));
 			}
 			if (fileTypes.empty()) throw "FILE TYPES EMPTY";
+			//// eol modes
+			vector<MenuItem*> eolModes;
+			eolModes.push_back(new EolModeMenuItem(EOL_MODE_WINDOWS));
+			eolModes.push_back(new EolModeMenuItem(EOL_MODE_UNIX));
 			
+			// build menu
 			//// File
 			vector<MenuItem*> fileItems;
 			fileItems.push_back(new ButtonMenuItem("Open...", menuFileOpen));
@@ -109,6 +134,10 @@ namespace textx {
 			fileItems.push_back(new ButtonMenuItem("Close", menuFileClose));
 			fileItems.push_back(new ButtonMenuItem("Exit", menuFileExit));
 			menuBar.push_back(Menu("File", fileItems));
+			//// Edit
+			vector<MenuItem*> editItems;
+			editItems.push_back(new SubMenuItem(Menu("EOL Mode", eolModes)));
+			menuBar.push_back(Menu("Edit", editItems));
 			//// View
 			vector<MenuItem*> viewItems;
 			viewItems.push_back(new SubMenuItem(Menu("File Type", fileTypes)));
