@@ -126,6 +126,12 @@ namespace textx {
 	};
 	static TextEditorAppInfo appInfo;
 	
+#ifdef TEXTX_WINDOWS
+		static const EolMode defaultEolMode = EOL_MODE_WINDOWS;
+#else
+		static const EolMode defaultEolMode = EOL_MODE_UNIX;
+#endif
+	
 	TextEditorApp::TextEditorApp(Pane* pane) : App(&appInfo, pane) {
 		screenLine = cursorOffset = selBeginOffset = selEndOffset = 0;
 		selectingText = false;
@@ -134,6 +140,7 @@ namespace textx {
 		unsaved = true;
 		
 		fileType = file_type::none;
+		eolMode = defaultEolMode;
 	};
 	
 	TextEditorApp::TextEditorApp(Pane* pane, string filename) : App(&appInfo, pane) {
@@ -162,6 +169,27 @@ namespace textx {
 		} else {
 			unsaved = true;
 		}
+		
+		// attempt to detect EOL mode
+		eolMode = defaultEolMode;
+		for (string::const_iterator it = buffer.asString().begin(); it != buffer.asString().end(); it++) {
+			if (*it == '\r') {
+				it++;
+				if (it != buffer.asString().end() && *it == '\n') {
+					eolMode = EOL_MODE_WINDOWS;
+					
+				    string::size_type pos = 0;
+				    while ((pos = buffer.asString().find("\r\n",pos)) != string::npos) {
+				        buffer.erase(pos);
+				    }
+				    
+					break;
+				}
+			} else if (*it == '\n') {
+				eolMode = EOL_MODE_UNIX;
+				break;
+			}
+		}
 	};
 	
 	static unsigned charWidth(char c, unsigned col) {
@@ -170,7 +198,6 @@ namespace textx {
 			int i = col % 4;
 			if (i == 0) return 4; else return i;
 		}
-		case '\r': return 0;
 		default: return 1;
 		}
 	}
@@ -182,7 +209,6 @@ namespace textx {
 			for (int i = 0; i < tabSpaces; i++) win.print(' ');
 			break;
 		}
-		case '\r': return;
 		default: {
 			if (isprint(c) || isspace(c)) {
 				win.print(c);
@@ -203,6 +229,12 @@ namespace textx {
 		status.printf("Line %d", line+1);
 		status.moveCursor(2, 0);
 		status.printf("Col %d", col+1);
+		
+		status.moveCursor(2, 0);
+		switch (eolMode) {
+		case EOL_MODE_WINDOWS: status.print("Win"); break;
+		case EOL_MODE_UNIX: status.print("Unix"); break;
+		}
 		
 		status.setCursor(status.width() - fileType->name.size(), 0);
 		status.print(fileType->name);
@@ -313,8 +345,23 @@ namespace textx {
 		if (hasFilename) {
 			if (unsaved) {
 				ofstream file(filename.c_str());
-				copy(buffer.asString().begin(), buffer.asString().end(), ostream_iterator<char>(file));
 				
+				switch (eolMode) {
+				case EOL_MODE_UNIX:
+					copy(buffer.asString().begin(), buffer.asString().end(), ostream_iterator<char>(file));
+					break;
+				case EOL_MODE_WINDOWS:
+					for (string::const_iterator it = buffer.asString().begin(); it != buffer.asString().end(); it++) {
+						if (*it == '\n') {
+							file << "\r\n";
+						} else {
+							file << *it;
+						}
+					}
+					break;
+				}
+				
+				file.flush();
 				unsaved = false;
 				getPane()->refreshTitleBar();
 			}
@@ -355,7 +402,6 @@ namespace textx {
 			
 			if (cursorOffset > 0) {
 				cursorOffset--;
-				while (cursorOffset > 0 && buffer[cursorOffset] == '\r') cursorOffset--;
 			}
 			break;
 		}
@@ -368,7 +414,6 @@ namespace textx {
 			
 			if (cursorOffset < buffer.size()) {
 				cursorOffset++;
-				while (cursorOffset < buffer.size() && buffer[cursorOffset] == '\r') cursorOffset++;
 			};
 			break;
 		}

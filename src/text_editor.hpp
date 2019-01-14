@@ -20,6 +20,11 @@
 namespace textx {
 	using namespace std;
 	
+	enum EolMode {
+		EOL_MODE_WINDOWS,
+		EOL_MODE_UNIX,
+	};
+	
 	class TextEditorApp : public App {
 	private:
 		void init();
@@ -30,6 +35,7 @@ namespace textx {
 		Buffer::offset_t cursorOffset, selBeginOffset, selEndOffset;
 		bool hasFilename, unsaved, selectingText;
 		FileType* fileType;
+		EolMode eolMode;
 		
 		TextEditorApp(Pane* pane);
 		TextEditorApp(Pane* pane, string filename);
