@@ -93,6 +93,7 @@ namespace textx {
 		switch (mode) {
 			case EOL_MODE_WINDOWS: return "Windows (\\r\\n)"; break;
 			case EOL_MODE_UNIX: return "Unix (\\n)"; break;
+			case EOL_MODE_MACOS: return "MacOS (\\r)"; break;
 			default: throw exception();
 		}
 	}
@@ -103,8 +104,12 @@ namespace textx {
 		EolModeMenuItem(EolMode mode) : ButtonMenuItem(eolModeToString(mode), NULL), mode(mode) {}
 		void onSelected() {
 			exitMenu();
-			((TextEditorApp*)getFocus())->eolMode = mode;
-			getFocus()->refresh();
+			if (((TextEditorApp*)getFocus())->eolMode != mode) {
+				((TextEditorApp*)getFocus())->eolMode = mode;
+				((TextEditorApp*)getFocus())->unsaved = true;
+				getFocus()->getPane()->refreshTitleBar();
+				getFocus()->getPane()->refresh();
+			}
 		}
 	};
 	
@@ -125,6 +130,7 @@ namespace textx {
 			vector<MenuItem*> eolModes;
 			eolModes.push_back(new EolModeMenuItem(EOL_MODE_WINDOWS));
 			eolModes.push_back(new EolModeMenuItem(EOL_MODE_UNIX));
+			eolModes.push_back(new EolModeMenuItem(EOL_MODE_MACOS));
 			
 			// build menu
 			//// File
@@ -208,10 +214,20 @@ namespace textx {
 					eolMode = EOL_MODE_WINDOWS;
 					
 				    string::size_type pos = 0;
-				    while ((pos = buffer.asString().find("\r\n",pos)) != string::npos) {
+				    while ((pos = buffer.asString().find("\r\n", pos)) != string::npos) {
 				        buffer.erase(pos);
 				    }
 				    
+					break;
+				} else {
+					eolMode = EOL_MODE_MACOS;
+					
+					string::size_type pos = 0;
+					while ((pos = buffer.asString().find('\r', pos)) != string::npos) {
+						buffer.erase(pos);
+						buffer.insert(pos, '\n');
+					}
+					
 					break;
 				}
 			} else if (*it == '\n') {
@@ -263,6 +279,7 @@ namespace textx {
 		switch (eolMode) {
 		case EOL_MODE_WINDOWS: status.print("Win"); break;
 		case EOL_MODE_UNIX: status.print("Unix"); break;
+		case EOL_MODE_MACOS: status.print("Mac"); break;
 		}
 		
 		status.setCursor(status.width() - fileType->name.size(), 0);
@@ -383,6 +400,15 @@ namespace textx {
 					for (string::const_iterator it = buffer.asString().begin(); it != buffer.asString().end(); it++) {
 						if (*it == '\n') {
 							file << "\r\n";
+						} else {
+							file << *it;
+						}
+					}
+					break;
+				case EOL_MODE_MACOS:
+					for (string::const_iterator it = buffer.asString().begin(); it != buffer.asString().end(); it++) {
+						if (*it == '\n') {
+							file << '\r';
 						} else {
 							file << *it;
 						}

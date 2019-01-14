@@ -23,6 +23,7 @@ namespace textx {
 	enum EolMode {
 		EOL_MODE_WINDOWS,
 		EOL_MODE_UNIX,
+		EOL_MODE_MACOS,
 	};
 	
 	class TextEditorApp : public App {
