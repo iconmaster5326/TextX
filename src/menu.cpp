@@ -227,6 +227,7 @@ namespace textx {
 	}
 	
 	void selectNextMenu() {
+		Menu* lastMenu = menuHistory[menuHistory.size()-1];
 		menuHistory.pop_back();
 		
 		if (getFocus() == NULL) {
@@ -243,7 +244,9 @@ namespace textx {
 				i++;
 			}
 			
-			// if we fall through, do nothing; we're in a submenu
+			// if we fall through, we're in a submenu
+			// TODO: move to parent menu's next menu
+			menuHistory.push_back(lastMenu);
 		}
 	}
 	
