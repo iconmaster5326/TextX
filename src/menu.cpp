@@ -245,8 +245,11 @@ namespace textx {
 			}
 			
 			// if we fall through, we're in a submenu
-			// TODO: move to parent menu's next menu
-			menuHistory.push_back(lastMenu);
+			// so move to parent menu's next menu
+			Menu* lastMenu = menuHistory[menuHistory.size()-1];
+			menuHistory.pop_back();
+			selectMenu(lastMenu);
+			selectNextMenu();
 		}
 	}
 	
