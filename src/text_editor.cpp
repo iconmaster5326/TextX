@@ -168,7 +168,7 @@ namespace textx {
 #endif
 	
 	TextEditorApp::TextEditorApp(Pane* pane) : App(&appInfo, pane) {
-		screenLine = cursorOffset = selBeginOffset = selEndOffset = 0;
+		screenLine = screenSubline = cursorOffset = selBeginOffset = selEndOffset = 0;
 		selectingText = false;
 		
 		hasFilename = false;
@@ -179,7 +179,7 @@ namespace textx {
 	};
 	
 	TextEditorApp::TextEditorApp(Pane* pane, string filename) : App(&appInfo, pane) {
-		screenLine = cursorOffset = selBeginOffset = selEndOffset = 0;
+		screenLine = screenSubline = cursorOffset = selBeginOffset = selEndOffset = 0;
 		selectingText = false;
 		
 		this->filename = filename;
@@ -298,21 +298,94 @@ namespace textx {
 		} while (maxLineNo);
 		return xMin;
 	}
-	
-	int TextEditorApp::getLineHeight(curses::Window win, int line) {\
+
+	int TextEditorApp::getMaxLineWidth(curses::Window win) {
 		int w, h; win.getSize(w, h);
 		int gutterWidth = getGutterWidth(win);
-		int rowWidth = w-gutterWidth;
+		return w - gutterWidth;
+	}
+	
+	int TextEditorApp::getLineHeight(curses::Window win, Buffer::line_t line) {
+		int rowWidth = getMaxLineWidth(win);
 		int lineWidth = buffer.lineLengthAtLine(line);
 		return (lineWidth / rowWidth) + 1;
 	}
+
+	int TextEditorApp::offsetToSubline(curses::Window win, Buffer::offset_t offset) {
+		int rowWidth = getMaxLineWidth(win);
+		Buffer::col_t col = buffer.offsetToCol(offset);
+		return col / rowWidth;
+	}
+
+	Buffer::offset_t TextEditorApp::minScreenOffset(curses::Window win) {
+		return buffer.lineToOffset(screenLine) + screenSubline * getMaxLineWidth(win);
+	}
+
+	Buffer::offset_t TextEditorApp::maxScreenOffset(curses::Window win) {
+		int w, h; win.getSize(w, h);
+		int rowWidth = getMaxLineWidth(win);
+
+		int line = screenLine;
+		int subline = screenSubline;
+		int y = 0;
+		Buffer::offset_t offset = minScreenOffset(win);
+
+		while (y < h) {
+			int lineHeight = getLineHeight(win, line);
+			int lineWidth = buffer.lineLengthAtOffset(buffer.lineToOffset(line) + subline * rowWidth);
+			if (lineWidth > rowWidth) lineWidth = rowWidth;
+
+			if (subline < lineHeight) {
+				subline++;
+			}
+			if (subline == lineHeight) {
+				subline = 0;
+				line++;
+				offset++;
+			}
+
+			offset += lineWidth;
+			y++;
+		}
+
+		return offset;
+	}
+
+	void TextEditorApp::moveCursor(curses::Window win, Buffer::offset_t offset) {
+		cursorOffset = offset;
+
+		// move screen up if needed
+		Buffer::offset_t begin = minScreenOffset(win);
+		if (offset < begin) {
+			screenLine = buffer.offsetToLine(offset);
+			screenSubline = buffer.offsetToCol(offset) / getMaxLineWidth(win);
+			return;
+		}
+
+		// move screen down if needed
+		Buffer::offset_t end = maxScreenOffset(win);
+		while (offset >= end) {
+			int lineHeight = getLineHeight(win, screenLine);
+
+			if (screenSubline < lineHeight) {
+				screenSubline++;
+			}
+			if (screenSubline == lineHeight) {
+				screenSubline = 0;
+				screenLine++;
+			}
+
+			end = maxScreenOffset(win);
+		}
+	}
 	
 	void TextEditorApp::updateScreen(curses::Window win, bool cursorOnly) {
+		win.setScrollable(false);
 		int w, h; win.getSize(w, h);
 		int xMin = getGutterWidth(win);
 		
 		Buffer::line_t line = screenLine;
-		Buffer::offset_t offset = buffer.lineToOffset(screenLine);
+		Buffer::offset_t offset = minScreenOffset(win);
 		
 		if (!cursorOnly) {
 			win.clear();
@@ -322,7 +395,7 @@ namespace textx {
 			win.setAttributes(A_BOLD);
 			getColorPair(color::yellow, color::system).use(win);
 
-			int gutterY = 0;
+			int gutterY = -screenSubline;
 			for (int line = screenLine; gutterY < h; line++) {
 				int lineHeight = getLineHeight(win, line);
 				for (int i = 0; i < lineHeight; i++) {
@@ -368,8 +441,7 @@ namespace textx {
 			case '\n':
 				x = xMin; y++;
 				if (!cursorOnly && y < h) {
-					win.print('\n');
-					win.moveCursor(xMin, 0);
+					win.setCursor(x, y);
 				}
 				break;
 			default:
@@ -377,7 +449,7 @@ namespace textx {
 				x += charWidth(c, x);
 				if (x >= w) {
 					x = xMin; y++;
-					if (!cursorOnly) win.moveCursor(xMin, 0);
+					if (!cursorOnly && y < h) win.setCursor(x, y);
 				}
 			}
 			
@@ -457,37 +529,27 @@ namespace textx {
 		case KEY_LEFT: {
 			if (selectingText) {
 				selectingText = false;
-			} else {
-				refreshCursorOnly = true;
 			}
 			
 			if (cursorOffset > 0) {
-				cursorOffset--;
+				moveCursor(win, cursorOffset-1);
 			}
 			break;
 		}
 		case KEY_RIGHT: {
 			if (selectingText) {
 				selectingText = false;
-			} else {
-				refreshCursorOnly = true;
 			}
 			
 			if (cursorOffset < buffer.size()) {
-				cursorOffset++;
+				moveCursor(win, cursorOffset+1);
 			};
 			break;
 		}
 		case KEY_UP: {
 			int line, col; buffer.offsetToLine(cursorOffset, line, col);
 			if (line == 0) break;
-			cursorOffset = buffer.lineToOffset(line-1, col);
-			
-			if (line-screenLine <= 0) {
-				screenLine--;
-			} else {
-				refreshCursorOnly = true;
-			}
+			moveCursor(win, buffer.lineToOffset(line-1, col));
 			
 			if (selectingText) {
 				selectingText = false;
@@ -497,13 +559,7 @@ namespace textx {
 		}
 		case KEY_DOWN: {
 			int line, col; buffer.offsetToLine(cursorOffset, line, col);
-			cursorOffset = buffer.lineToOffset(line+1, col);
-			
-			if (line-screenLine >= win.height()-1) {
-				screenLine++;
-			} else {
-				refreshCursorOnly = true;
-			}
+			moveCursor(win, buffer.lineToOffset(line+1, col));
 			
 			if (selectingText) {
 				selectingText = false;
@@ -514,7 +570,7 @@ namespace textx {
 		case KEY_DC: {
 			if (selectingText) {
 				buffer.erase(selBeginOffset, selEndOffset-selBeginOffset);
-				cursorOffset = selBeginOffset;
+				moveCursor(win, selBeginOffset);
 				selectingText = false;
 			} else {
 				if (cursorOffset >= buffer.size()) break;
@@ -528,7 +584,7 @@ namespace textx {
 		case KEY_BACKSPACE: {
 			if (selectingText) {
 				buffer.erase(selBeginOffset, selEndOffset-selBeginOffset);
-				cursorOffset = selBeginOffset;
+				moveCursor(win, selBeginOffset);
 				selectingText = false;
 			} else {
 				if (cursorOffset == 0) break;
@@ -541,7 +597,7 @@ namespace textx {
 		}
 		case KEY_SLEFT: {
 			if (cursorOffset == 0) break;
-			cursorOffset--;
+			moveCursor(win, cursorOffset-1);
 			
 			if (selectingText) {
 				if (cursorOffset < selBeginOffset) {
@@ -558,7 +614,7 @@ namespace textx {
 		}
 		case KEY_SRIGHT: {
 			if (cursorOffset >= buffer.size()) break;
-			cursorOffset++;
+			moveCursor(win, cursorOffset+1);
 			
 			if (selectingText) {
 				if (cursorOffset <= selEndOffset) {
@@ -577,11 +633,7 @@ namespace textx {
 			unsigned oldCursor = cursorOffset;
 			int line, col; buffer.offsetToLine(cursorOffset, line, col);
 			if (line == 0) break;
-			cursorOffset = buffer.lineToOffset(line-1, col);
-			
-			if (line-screenLine <= 0) {
-				screenLine--;
-			}
+			moveCursor(win, buffer.lineToOffset(line-1, col));
 			
 			if (selectingText) {
 				if (cursorOffset < selBeginOffset) {
@@ -600,11 +652,7 @@ namespace textx {
 		case KEY_SF: { // shift-down
 			unsigned oldCursor = cursorOffset;
 			int line, col; buffer.offsetToLine(cursorOffset, line, col);
-			cursorOffset = buffer.lineToOffset(line+1, col);
-			
-			if (line-screenLine >= win.height()-1) {
-				screenLine++;
-			}
+			moveCursor(win, buffer.lineToOffset(line+1, col));
 			
 			if (selectingText) {
 				if (cursorOffset <= selEndOffset) {
@@ -625,7 +673,7 @@ namespace textx {
 			setClipboard(buffer.asString().substr(selBeginOffset, selEndOffset-selBeginOffset));
 			
 			buffer.erase(selBeginOffset, selEndOffset-selBeginOffset);
-			cursorOffset = selBeginOffset;
+			moveCursor(win, selBeginOffset);
 			selectingText = false;
 			
 			break;
@@ -639,7 +687,7 @@ namespace textx {
 		case 22: { // ^V: paste
 			if (selectingText) {
 				buffer.erase(selBeginOffset, selEndOffset-selBeginOffset);
-				cursorOffset = selBeginOffset;
+				moveCursor(win, selBeginOffset);
 				selectingText = false;
 			}
 			
@@ -662,11 +710,11 @@ namespace textx {
 				
 				selBeginOffset++; selEndOffset++;
 				selEndOffset += endLine-beginLine;
-				cursorOffset = selBeginOffset;
+				moveCursor(win, selBeginOffset);
 			} else {
 				// insert literal tab
 				buffer.insert(cursorOffset, '\t');
-				cursorOffset++;
+				moveCursor(win, cursorOffset+1);
 			}
 			
 			markAsUnsaved();
@@ -699,7 +747,7 @@ namespace textx {
 							selEndOffset--;
 						}
 					} else {
-						cursorOffset--;
+						moveCursor(win, cursorOffset-1);
 					}
 				}
 			}
@@ -708,19 +756,17 @@ namespace textx {
 				if (tabsRemoved != 0) {
 					selBeginOffset += (endLine-beginLine)-1;
 				}
-				cursorOffset = selBeginOffset;
+				moveCursor(win, selBeginOffset);
 			}
 			break;
 		}
 		case KEY_HOME: {
 			int line = buffer.offsetToLine(cursorOffset);
-			cursorOffset = buffer.lineToOffset(line);
-			refreshCursorOnly = true;
+			moveCursor(win, buffer.lineToOffset(line));
 		} break;
 		case KEY_END: {
 			int line = buffer.offsetToLine(cursorOffset);
-			cursorOffset = buffer.lineToOffset(line, numeric_limits<Buffer::col_t>::max());
-			refreshCursorOnly = true;
+			moveCursor(win, buffer.lineToOffset(line, numeric_limits<Buffer::col_t>::max()));
 		} break;
 		case KEY_PPAGE: { // page up
 			int line, col; buffer.offsetToLine(cursorOffset, line, col);
@@ -729,34 +775,23 @@ namespace textx {
 				line = 0;
 				col = 0;
 			}
-			cursorOffset = buffer.lineToOffset(line, col);
-			if (line < screenLine) {
-				screenLine = line;
-			} else {
-				refreshCursorOnly = true;
-			}
+			moveCursor(win, buffer.lineToOffset(line, col));
 		} break;
 		case KEY_NPAGE: { // page down
 			int line, col; buffer.offsetToLine(cursorOffset, line, col);
 			line += win.height();
-			cursorOffset = buffer.lineToOffset(line, col);
-			line = buffer.offsetToLine(cursorOffset);
-			if (line >= screenLine+win.height()) {
-				screenLine = line-win.height()+1;
-			} else {
-				refreshCursorOnly = true;
-			}
+			moveCursor(win, buffer.lineToOffset(line, col));
 		} break;
 		case '\n':
 		case KEY_ENTER: {
 			if (selectingText) {
 				buffer.erase(selBeginOffset, selEndOffset-selBeginOffset);
-				cursorOffset = selBeginOffset;
+				moveCursor(win, selBeginOffset);
 				selectingText = false;
 			}
 			
 			buffer.insert(cursorOffset, '\n');
-			cursorOffset++;
+			moveCursor(win, cursorOffset+1);
 			
 			// scroll screen if needed
 			int line = buffer.offsetToLine(cursorOffset);
@@ -768,7 +803,7 @@ namespace textx {
 			int lastLine = buffer.lineToOffset(line-1);
 			while (lastLine > 0 && lastLine < buffer.size() && buffer[lastLine] != '\n' && isspace(buffer[lastLine])) {
 				buffer.insert(cursorOffset, buffer[lastLine]);
-				cursorOffset++;
+				moveCursor(win, cursorOffset+1);
 				lastLine++;
 			}
 			
@@ -777,12 +812,12 @@ namespace textx {
 		default: {
 			if (selectingText) {
 				buffer.erase(selBeginOffset, selEndOffset-selBeginOffset);
-				cursorOffset = selBeginOffset;
+				moveCursor(win, selBeginOffset);
 				selectingText = false;
 			}
 			
 			buffer.insert(cursorOffset, key.value);
-			cursorOffset++;
+			moveCursor(win, cursorOffset+1);
 			
 			markAsUnsaved();
 		}

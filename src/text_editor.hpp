@@ -30,11 +30,17 @@ namespace textx {
 	private:
 		void init();
 		int getGutterWidth(curses::Window win);
-		int getLineHeight(curses::Window win, int line);
+		int getMaxLineWidth(curses::Window win);
+		int getLineHeight(curses::Window win, Buffer::line_t line);
+		int offsetToSubline(curses::Window win, Buffer::offset_t offset);
+		Buffer::offset_t minScreenOffset(curses::Window win);
+		Buffer::offset_t maxScreenOffset(curses::Window win);
+		void moveCursor(curses::Window win, Buffer::offset_t offset);
 	public:
 		Buffer buffer;
 		string filename;
 		Buffer::line_t screenLine;
+		int screenSubline;
 		Buffer::offset_t cursorOffset, selBeginOffset, selEndOffset;
 		bool hasFilename, unsaved, selectingText;
 		FileType* fileType;
