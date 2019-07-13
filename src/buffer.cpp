@@ -25,12 +25,12 @@ namespace textx {
 		
 		text.insert(offset, 1, c);
 		if (c == '\n') {
-			lineToOffsetCache.insert(lineIt, offset);
-			lineIt++;
+			lineIt = lineToOffsetCache.insert(lineIt, offset);
+			if (lineIt != lineToOffsetCache.end()) lineIt++;
 		}
 		
-		for (deque<offset_t>::iterator restLines = lineIt; restLines != lineToOffsetCache.end(); restLines++) {
-			(*restLines)++;
+		for (; lineIt != lineToOffsetCache.end(); lineIt++) {
+			(*lineIt)++;
 		}
 	}
 
@@ -43,8 +43,8 @@ namespace textx {
 		
 		text.erase(text.begin()+offset);
 		
-		for (deque<offset_t>::iterator restLines = lineIt; restLines != lineToOffsetCache.end(); restLines++) {
-			(*restLines)--;
+		for (; lineIt != lineToOffsetCache.end(); lineIt++) {
+			(*lineIt)--;
 		}
 	}
 

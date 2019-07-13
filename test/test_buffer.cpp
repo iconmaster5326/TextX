@@ -17,6 +17,7 @@ using namespace textx;
  */
 #define ASSERT_TRUE(a) if (!(a)) return "Assertion (" #a ") failed.";
 #define ASSERT_EQUALS(a,b) if ((a) != (b)) return "Assertion (" #a " == " #b ") failed.";
+#define ASSERT_NOT_EQUALS(a,b) if ((a) == (b)) return "Assertion (" #a " != " #b ") failed.";
 
 /*
  * Test cases
@@ -357,6 +358,27 @@ string testInsetOnEmptyLine() {
 	return "";
 }
 
+#include <fstream>
+#include <iterator>
+
+string testLoadReadme() {
+	ifstream readme("README.md");
+	ASSERT_TRUE(readme.good());
+	noskipws(readme);
+	Buffer b;
+	copy(istream_iterator<char>(readme), istream_iterator<char>(), back_inserter(b));
+	b.insert(0, '\n');
+	for (int i = 0; i < b.size()-1; i++) {
+		char c = b[i];
+		if (c == '\n') {
+			ASSERT_EQUALS(b.offsetToCol(i+1), 0);
+		} else {
+			ASSERT_NOT_EQUALS(b.offsetToCol(i+1), 0);
+		}
+	}
+	return "";
+}
+
 /*
  * Test harness
  */
@@ -396,6 +418,7 @@ int main(int argc, char** argv) {
 	TEST(testEraseString);
 	TEST(testEraseNewlines);
 	TEST(testInsetOnEmptyLine);
+	TEST(testLoadReadme);
 	
 	// print results
 	cout << endl;

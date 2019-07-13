@@ -30,3 +30,6 @@ vgcore.*
 /.settings/
 /Debug/
 /Release/
+
+# VS Code related files
+/.vscode
