@@ -29,6 +29,8 @@ namespace textx {
 	class TextEditorApp : public App {
 	private:
 		void init();
+		int getGutterWidth(curses::Window win);
+		int getLineHeight(curses::Window win, int line);
 	public:
 		Buffer buffer;
 		string filename;

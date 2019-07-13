@@ -287,20 +287,31 @@ namespace textx {
 		
 		status.refresh();
 	}
-	
-	void TextEditorApp::updateScreen(curses::Window win, bool cursorOnly) {
+
+	int TextEditorApp::getGutterWidth(curses::Window win) {
 		int w, h; win.getSize(w, h);
-		
-		// find size of the gutter
 		int xMin = 1;
-		
-		Buffer::line_t line = screenLine;
 		Buffer::line_t maxLineNo = screenLine+h;
 		do {
 			maxLineNo /= 10;
 			xMin++; 
 		} while (maxLineNo);
+		return xMin;
+	}
+	
+	int TextEditorApp::getLineHeight(curses::Window win, int line) {\
+		int w, h; win.getSize(w, h);
+		int gutterWidth = getGutterWidth(win);
+		int rowWidth = w-gutterWidth;
+		int lineWidth = buffer.lineLengthAtLine(line);
+		return (lineWidth / rowWidth) + 1;
+	}
+	
+	void TextEditorApp::updateScreen(curses::Window win, bool cursorOnly) {
+		int w, h; win.getSize(w, h);
+		int xMin = getGutterWidth(win);
 		
+		Buffer::line_t line = screenLine;
 		Buffer::offset_t offset = buffer.lineToOffset(screenLine);
 		
 		if (!cursorOnly) {
@@ -310,24 +321,19 @@ namespace textx {
 			win.setCursor(0, 0);
 			win.setAttributes(A_BOLD);
 			getColorPair(color::yellow, color::system).use(win);
-			
-			for (int y = 0; y < h; y++) {
-				if (line < buffer.lines()) {
-					win.setCursor(0, y);
-					win.printf("%d", line+1);
-				}
-				win.setCursor(xMin-1, y);
-				win.print(ACS_VLINE);
-				
-				int len = buffer.lineLengthAtLine(line);
-				while (len > w-xMin) {
-					len -= w-xMin;
-					y++;
-					win.setCursor(xMin-1, y);
+
+			int gutterY = 0;
+			for (int line = screenLine; gutterY < h; line++) {
+				int lineHeight = getLineHeight(win, line);
+				for (int i = 0; i < lineHeight; i++) {
+					if (i == 0 && line < buffer.lines()) {
+						win.setCursor(0, gutterY);
+						win.printf("%d", line+1);
+					}
+					win.setCursor(xMin-1, gutterY);
 					win.print(ACS_VLINE);
+					gutterY++;
 				}
-				
-				line++;
 			}
 			
 			win.setAttributes(0);
@@ -813,13 +819,7 @@ namespace textx {
 			int w, h; win.getSize(w, h);
 			
 			// find size of the gutter
-			int xMin = 1;
-			
-			int maxLineNo = screenLine+h;
-			do {
-				maxLineNo /= 10;
-				xMin++; 
-			} while (maxLineNo);
+			int xMin = getGutterWidth(win);
 			
 			// do mouse event
 			if (mevent.click(1)) {
